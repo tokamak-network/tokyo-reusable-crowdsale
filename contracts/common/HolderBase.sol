@@ -2,6 +2,7 @@ pragma solidity ^0.4.18;
 
 import '../zeppelin/math/SafeMath.sol';
 import '../zeppelin/ownership/Ownable.sol';
+import '../zeppelin/token/ERC20.sol';
 
 /**
  * @title HolderBase
@@ -11,6 +12,7 @@ contract HolderBase is Ownable {
   using SafeMath for uint256;
 
   uint256 public ratioCoeff;
+  bool distributed;
 
   struct Holder {
     address addr;
@@ -47,12 +49,29 @@ contract HolderBase is Ownable {
    * function of RefundVault contract.
    */
   function distribute() internal {
+    require(!distributed);
     uint256 balance = this.balance;
+    distributed = true;
 
     for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = balance.mul(holders[i].ratio).div(ratioCoeff);
 
       holders[i].addr.transfer(holderAmount);
+    }
+  }
+
+  /**
+   * @dev Distribute ERC20 token to `holder`s according to ratio.
+   */
+  function distribute(ERC20 token) internal {
+    require(!distributed);
+    uint256 balance = token.balanceOf(this);
+    distributed = true;
+
+    for (uint8 i = 0; i < holders.length; i++) {
+      uint256 holderAmount = balance.mul(holders[i].ratio).div(ratioCoeff);
+
+      token.transfer(holders[i].addr, holderAmount);
     }
   }
 }
