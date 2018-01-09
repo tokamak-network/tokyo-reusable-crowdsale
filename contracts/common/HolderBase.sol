@@ -14,52 +14,45 @@ contract HolderBase is Ownable {
 
   struct Holder {
     address addr;
-    bool received;
     uint256 ratio;
   }
 
-  Holder[] holders;
-  mapping (address => bool) isHolder;
+  Holder[] public holders;
 
   function HolderBase(uint256 _ratioCoeff) public {
     require(_ratioCoeff != 0);
     ratioCoeff = _ratioCoeff;
   }
 
-  function addHolder(address _addr, uint256 _ratio) public onlyOwner {
-    require(state == State.Active);
-    require(!isHolder[_addr]);
-    require(_ratio < ratioCoeff);
-
-    holders.push(Holder(_addr, false, _ratio));
-    isHolder[_addr] = true;
+  function getHolderCount() public view returns (uint256) {
+    return holders.length;
   }
 
-  function removeHolder(address _addr) public onlyOwner {
-    require(state == State.Active);
-    require(isHolder[_addr]);
+  function initHolders(address[] _addrs, uint256[], _ratios) public onlyOwner {
+    require(holders.length == 0);
+    require(_addrs.length == _ratios.length);
+    uint256 accRatio;
 
-    for (uint8 i = 0; i < holders.length; i++) {
-      if (holders[i].addr == _addr) {
-        delete holders[i];
-        isHolder[_addr] = false;
-        return;
-      }
+    for(uint8 i = 0; i < _addrs.length; i++) {
+      holders.push(Holder(_addrs[i], _ratios[i]));
+      accRatio = accRatio.add(holders[i].ratio);
     }
+
+    require(accRatio <= ratioCoeff);
   }
 
   /**
    * @dev Distribute ether to `holder`s according to ratio.
-   * Remaining ether is transfered to `wallet`.
+   * Remaining ether is transfered to `wallet` from the close
+   * function of RefundVault contract.
    */
   function distribute() internal {
     uint256 balance = this.balance;
 
-    for (uint8 = 0; i < holders.length; i++) {
+    for (uint8 i = 0; i < holders.length; i++) {
       uint256 holderAmount = balance.mul(holders[i].ratio).div(ratioCoeff);
 
       holders[i].addr.transfer(holderAmount);
-      holders[i].received = true;
     }
   }
 }
