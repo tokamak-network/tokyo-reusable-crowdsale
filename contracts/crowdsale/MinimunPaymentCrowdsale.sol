@@ -20,8 +20,8 @@ contract MinimunPaymentCrowdsale is Crowdsale {
   /**
    * @return true if msg.value is less than `minPayment`.
    */
-  function validPayment() internal view returns (bool) {
+  function validPurchase() internal view returns (bool) {
     bool overMinPayment = msg.value >= minPayment;
-    return overMinPayment && super.validPayment();
+    return overMinPayment && super.validPurchase();
   }
 }
