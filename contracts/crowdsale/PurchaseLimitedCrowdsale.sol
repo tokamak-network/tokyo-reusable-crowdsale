@@ -4,7 +4,8 @@ import "../zeppelin/crowdsale/Crowdsale.sol";
 import "../zeppelin/ownership/Ownable.sol";
 
 /**
- * @dev Limit a single purchaser from funding too many ether.
+ * @title PurchaseLimitedCrowdsale
+ * @notice Limit a single purchaser from funding too many ether.
  */
 contract PurchaseLimitedCrowdsale is Crowdsale {
   mapping (address => uint256) public purchaseFunded;
@@ -17,13 +18,22 @@ contract PurchaseLimitedCrowdsale is Crowdsale {
     purchaseLimit = _purchaseLimit;
   }
 
+  /**
+   * @dev Record the accumulated amount of purchaser to fund before
+   * super.buyTokens() called.
+   */
   function buyTokens(address beneficiary) public payable {
-    super.buyTokens(beneficiary);
     purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
+    super.buyTokens(beneficiary);
   }
 
+  /**
+   * @dev valid if purchaser didn't exceed the limit.
+   * it doesn't need to consider `msg.value` becuase validPurchase function is called
+   * after purchaseFunded is added.
+   */
   function validPurchase() internal view returns (bool) {
-    bool underLimit = purchaseFunded[msg.sender].add(msg.value) <= purchaseLimit;
+    bool underLimit = purchaseFunded[msg.sender] <= purchaseLimit;
     return underLimit && super.validPurchase();
   }
 }

@@ -4,7 +4,8 @@ import "../zeppelin/crowdsale/Crowdsale.sol";
 import "../zeppelin/ownership/Ownable.sol";
 
 /**
- * @dev Token purchasing requires minimun ether.
+ * @title MinimunPurchasedCrowdsale
+ * @notice To buy tokens, purchaser should make payment with minimun amount of ether.
  */
 contract MinimunPurchasedCrowdsale is Crowdsale {
   uint256 minPurchase;
@@ -16,6 +17,9 @@ contract MinimunPurchasedCrowdsale is Crowdsale {
     minPurchase = _minPurchase;
   }
 
+  /**
+   * @dev valid if msg.value is less than `minPurchase`.
+   */
   function validPurchase() internal view returns (bool) {
     bool overMinPurchase = msg.value >= minPurchase;
     return overMinPurchase && super.validPurchase();

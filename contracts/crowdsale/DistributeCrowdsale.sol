@@ -4,7 +4,9 @@ import "../zeppelin/crowdsale/Crowdsale.sol";
 import "../common/HolderBase.sol";
 
 /**
- * @dev DistributeCrowdsale distributes crowdsale's token to token holders
+ * @title DistributeCrowdsale
+ * @notice DistributeCrowdsale distributes crowdsale's token to token holders.
+ *  Use MultiHolderVault to distribute ether.
  */
 contract DistributeCrowdsale is HolderBase, Crowdsale {
   function DistributeCrowdsale(uint256 _ratioCoeff, uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet)

@@ -6,7 +6,8 @@ import '../zeppelin/token/ERC20.sol';
 
 /**
  * @title HolderBase
- * @dev This contract handler token / ether holder.
+ * @notice HolderBase handles data & funcitons for token or ether holders.
+ * HolderBase contract can distribute only one of ether or token.
  */
 contract HolderBase is Ownable {
   using SafeMath for uint256;
