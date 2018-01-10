@@ -19,21 +19,23 @@ contract PurchaseLimitedCrowdsale is Crowdsale {
   }
 
   /**
-   * @dev Record the accumulated amount of purchaser to fund before
+   * @dev Record the accumulated amount of purchaser to fund after
    * super.buyTokens() called.
    */
   function buyTokens(address beneficiary) public payable {
-    purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
     super.buyTokens(beneficiary);
+    purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
   }
 
   /**
-   * @dev valid if purchaser didn't exceed the limit.
-   * it doesn't need to consider `msg.value` becuase validPurchase function is called
-   * after purchaseFunded is added.
+   * @return true if purchaser didn't exceed the limit.
    */
   function validPurchase() internal view returns (bool) {
-    bool underLimit = purchaseFunded[msg.sender] <= purchaseLimit;
+    bool underLimit = purchaseFunded[msg.sender].add(msg.value) <= purchaseLimit;
     return underLimit && super.validPurchase();
+  }
+
+  function afterBuyTokens() internal {
+    purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
   }
 }
