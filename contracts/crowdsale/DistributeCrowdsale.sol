@@ -10,6 +10,5 @@ contract DistributeCrowdsale is HolderBase, Crowdsale {
   function DistributeCrowdsale(uint256 _ratioCoeff, uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet)
     public
     HolderBase(_ratioCoeff)
-    Crowdsale(_startTime, _endTime, _rate, _wallet)
-    {}
+    Crowdsale(_startTime, _endTime, _rate, _wallet) {}
 }

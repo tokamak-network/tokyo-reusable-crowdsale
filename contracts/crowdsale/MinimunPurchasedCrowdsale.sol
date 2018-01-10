@@ -11,11 +11,10 @@ contract MinimunPurchasedCrowdsale is Crowdsale {
 
   function MinimunPurchasedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _minPurchase)
     public
-    Crowdsale(_startTime, _endTime, _rate, _wallet)
-    {
-      require(minPurchase != 0);
-      minPurchase = _minPurchase;
-    }
+    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+    require(minPurchase != 0);
+    minPurchase = _minPurchase;
+  }
 
   function validPurchase() internal view returns (bool) {
     bool overMinPurchase = msg.value >= minPurchase;

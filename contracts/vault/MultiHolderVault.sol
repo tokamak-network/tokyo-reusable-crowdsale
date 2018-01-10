@@ -14,8 +14,7 @@ contract MultiHolderVault is HolderBase, RefundVault {
   function MultiHolderVault(address _wallet, uint256 _ratioCoeff)
     public
     HolderBase(_ratioCoeff)
-    RefundVault(_wallet)
-    {}
+    RefundVault(_wallet) {}
 
   function close() public onlyOwner {
     require(state == State.Active);

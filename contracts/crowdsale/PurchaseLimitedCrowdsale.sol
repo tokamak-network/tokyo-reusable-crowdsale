@@ -12,11 +12,10 @@ contract PurchaseLimitedCrowdsale is Crowdsale {
 
   function PurchaseLimitedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _purchaseLimit)
     public
-    Crowdsale(_startTime, _endTime, _rate, _wallet)
-    {
-      require(_purchaseLimit != 0);
-      purchaseLimit = _purchaseLimit;
-    }
+    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+    require(_purchaseLimit != 0);
+    purchaseLimit = _purchaseLimit;
+  }
 
   function buyTokens(address beneficiary) public payable {
     super.buyTokens(beneficiary);
