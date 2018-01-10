@@ -5,13 +5,13 @@ import '../zeppelin/crowdsale/RefundVault.sol';
 import '../common/HolderBase.sol';
 
 /**
- * @title MultipleHolderVault
+ * @title MultiHolderVault
  * @dev This contract distribute ether to multiple address.
  */
-contract MultipleHolderVault is HolderBase, RefundVault {
+contract MultiHolderVault is HolderBase, RefundVault {
   using SafeMath for uint256;
 
-  function MultipleHolderVault(address _wallet, uint256 _ratioCoeff)
+  function MultiHolderVault(address _wallet, uint256 _ratioCoeff)
     public
     HolderBase(_ratioCoeff)
     RefundVault(_wallet)
