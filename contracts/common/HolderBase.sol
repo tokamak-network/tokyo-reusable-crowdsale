@@ -50,6 +50,7 @@ contract HolderBase is Ownable {
    */
   function distribute() internal {
     require(!distributed);
+    require(this.balance > 0);
     uint256 balance = this.balance;
     distributed = true;
 
@@ -65,6 +66,7 @@ contract HolderBase is Ownable {
    */
   function distribute(ERC20 token) internal {
     require(!distributed);
+    require(this.balance > 0);
     uint256 balance = token.balanceOf(this);
     distributed = true;
 
