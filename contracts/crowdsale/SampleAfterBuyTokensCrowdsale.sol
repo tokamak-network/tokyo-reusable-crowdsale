@@ -20,8 +20,9 @@ contract SampleAfterBuyTokensCrowdsale is Crowdsale, BlockIntervalCrowdsale, Pur
    * @notice save block number condition after call super.buyTokens function.
    */
   function buyTokens(address beneficiary) public payable {
-    Crowdsale.buyTokens(beneficiary);
+    /*Crowdsale.buyTokens(beneficiary);
     BlockIntervalCrowdsale.afterBuyTokens();
-    PurchaseLimitedCrowdsale.afterBuyTokens();
+    PurchaseLimitedCrowdsale.afterBuyTokens();*/
+    super.buyTokens(beneficiary);
   }
 }

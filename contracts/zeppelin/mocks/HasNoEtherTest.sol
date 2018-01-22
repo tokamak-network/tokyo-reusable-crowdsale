@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../contracts/ownership/HasNoEther.sol";
+import "../ownership/HasNoEther.sol";
 
 
 contract HasNoEtherTest is HasNoEther {
