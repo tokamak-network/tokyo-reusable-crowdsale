@@ -18,14 +18,6 @@ contract BlockIntervalCrowdsale is Crowdsale {
     }
 
   /**
-   * @notice save block number condition after call super.buyTokens function.
-   */
-  function buyTokens(address beneficiary) public payable {
-    super.buyTokens(beneficiary);
-    recentBlock[msg.sender] = block.number;
-  }
-
-  /**
    * @return true if the block number is over the block internal.
    */
   function validPurchase() internal view returns (bool) {
@@ -33,7 +25,10 @@ contract BlockIntervalCrowdsale is Crowdsale {
     return withinBlock && super.validPurchase();
   }
 
-  function afterBuyTokens() internal {
+  /**
+   * @notice save the block number
+   */
+  function afterBuyTokens(address) internal {
     recentBlock[msg.sender] = block.number;
   }
 }
