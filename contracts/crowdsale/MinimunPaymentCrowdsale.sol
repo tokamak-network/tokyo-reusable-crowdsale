@@ -8,7 +8,7 @@ import "../zeppelin/ownership/Ownable.sol";
  * @notice To buy tokens, purchaser should make payment with minimun amount of ether.
  */
 contract MinimunPaymentCrowdsale is Crowdsale {
-  uint256 minPayment;
+  uint256 public minPayment;
 
   function MinimunPaymentCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _minPayment)
     public

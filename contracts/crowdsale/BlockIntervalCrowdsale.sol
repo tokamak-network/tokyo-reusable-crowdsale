@@ -8,7 +8,7 @@ import "../zeppelin/crowdsale/Crowdsale.sol";
  */
 contract BlockIntervalCrowdsale is Crowdsale {
   uint256 public blockInterval;
-  mapping (address => uint256) recentBlock;
+  mapping (address => uint256) public recentBlock;
 
   function BlockIntervalCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _blockInterval)
     public

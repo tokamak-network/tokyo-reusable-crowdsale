@@ -13,7 +13,7 @@ contract HolderBase is Ownable {
   using SafeMath for uint256;
 
   uint256 public ratioCoeff;
-  bool distributed;
+  bool public distributed;
 
   struct Holder {
     address addr;
