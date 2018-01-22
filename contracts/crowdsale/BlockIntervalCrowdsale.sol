@@ -1,7 +1,7 @@
 pragma solidity ^0.4.18;
 
-import "./HookedCrowdsale.sol";
 import "../zeppelin/crowdsale/Crowdsale.sol";
+import "./HookedCrowdsale.sol";
 
 /**
  * @title BlockIntervalCrowdsale
