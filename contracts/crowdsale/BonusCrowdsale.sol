@@ -76,21 +76,15 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     }
 
     /**
-    * @dev Overrided buyTokens method of parent Crowdsale contract  to provide bonus by changing and restoring rate variable
+    * @notice Overrided getTokenAmount function of parent Crowdsale contract
+      to calculate the token with time and amount bonus.
     * @param beneficiary walelt of investor to receive tokens
     */
-    function buyTokens(address beneficiary) public payable {
-        // Compute usd amount = wei * catsInEth * usdcentsInCat / usdcentsPerUsd / weisPerEth
-        uint256 usdValue = msg.value.mul(rate).mul(tokenPriceInCents).div(100).div(1 ether);
-
+    function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
         // Compute time and amount bonus
-        uint256 bonus = computeBonus(usdValue);
-
-        // Apply bonus by adjusting and restoring rate member
-        uint256 oldRate = rate;
-        rate = rate.mul(BONUS_COEFF.add(bonus)).div(BONUS_COEFF);
-        super.buyTokens(beneficiary);
-        rate = oldRate;
+        uint256 bonus = computeBonus(weiAmount);
+        uint256 rateWithBonus = rate.mul(BONUS_COEFF.add(bonus)).div(BONUS_COEFF);
+        return weiAmount.mul(rateWithBonus);
     }
 
     /**
@@ -98,8 +92,8 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     * The total bonus is the sum of bonus by time and bonus by amount
     * @return bonus percentage scaled by 10
     */
-    function computeBonus(uint256 usdValue) public view returns(uint256) {
-        return computeAmountBonus(usdValue).add(computeTimeBonus());
+    function computeBonus(uint256 weiAmount) public view returns(uint256) {
+        return computeAmountBonus(weiAmount).add(computeTimeBonus());
     }
 
     /**
@@ -122,9 +116,9 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     * @dev Computes bonus based on amount of contribution
     * @return bonus percentage scaled by 10
     */
-    function computeAmountBonus(uint256 usdValue) public view returns(uint256) {
+    function computeAmountBonus(uint256 weiAmount) public view returns(uint256) {
         for (uint i = 0; i < BONUS_AMOUNTS.length; i++) {
-            if (usdValue >= BONUS_AMOUNTS[i]) {
+            if (weiAmount >= BONUS_AMOUNTS[i]) {
                 return BONUS_AMOUNTS_VALUES[i];
             }
         }

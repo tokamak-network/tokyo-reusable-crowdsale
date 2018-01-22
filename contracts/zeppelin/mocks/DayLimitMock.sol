@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../../contracts/DayLimit.sol";
+import "../DayLimit.sol";
 
 
 contract DayLimitMock is DayLimit {
