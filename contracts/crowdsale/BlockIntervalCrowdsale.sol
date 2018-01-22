@@ -1,18 +1,18 @@
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
+import "./HookedCrowdsale.sol";
 
 /**
  * @title BlockIntervalCrowdsale
  * @notice BlockIntervalCrowdsale limit purchaser to take participate too frequently.
  */
-contract BlockIntervalCrowdsale is Crowdsale {
+contract BlockIntervalCrowdsale is HookedCrowdsale {
   uint256 public blockInterval;
   mapping (address => uint256) public recentBlock;
 
   function BlockIntervalCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _blockInterval)
     public
-    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+    HookedCrowdsale(_startTime, _endTime, _rate, _wallet) {
       require(_blockInterval != 0);
       blockInterval = _blockInterval;
     }
