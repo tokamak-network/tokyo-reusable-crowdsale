@@ -8,8 +8,6 @@ import "../zeppelin/crowdsale/Crowdsale.sol";
  * Crowdsale.buyTokens function called
  */
 contract HookedCrowdsale is Crowdsale {
-  uint256 public blockInterval;
-  mapping (address => uint256) public recentBlock;
 
   /**
    * @notice link post hook with buyTokens funciton.

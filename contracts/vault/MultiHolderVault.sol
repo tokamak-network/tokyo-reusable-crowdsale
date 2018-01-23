@@ -18,9 +18,9 @@ contract MultiHolderVault is HolderBase, RefundVault {
 
   function close() public onlyOwner {
     require(state == State.Active);
+    require(_wallet !== 0x0 || initiated)
 
     super.distribute(); // distribute ether to holders
-
     super.close(); // distribute ether to wallet
   }
 }

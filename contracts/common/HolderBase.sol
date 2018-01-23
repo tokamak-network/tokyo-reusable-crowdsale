@@ -14,6 +14,7 @@ contract HolderBase is Ownable {
 
   uint256 public ratioCoeff;
   bool public distributed;
+  bool public initiated;
 
   struct Holder {
     address addr;
@@ -32,9 +33,12 @@ contract HolderBase is Ownable {
   }
 
   function initHolders(address[] _addrs, uint256[] _ratios) public onlyOwner {
+
     require(holders.length == 0);
     require(_addrs.length == _ratios.length);
     uint256 accRatio;
+
+    initiated = true;
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));
