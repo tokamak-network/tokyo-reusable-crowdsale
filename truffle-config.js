@@ -1,13 +1,15 @@
 require("babel-register");
 require("babel-polyfill");
 
+const Ganache = require("ganache-core");
+
 const HDWalletProvider = require("truffle-hdwallet-provider");
 require("dotenv").config();
 
 const mnemonic = process.env.MNEMONIC || "onther tokyo onther tokyo onther tokyo onther tokyo onther tokyo onther tokyo";
-const providerUrl = "https://ropsten.infura.io";
+const mnemonicTest = process.env.MNEMONIC_TEST || "onther tokyo onther tokyo onther tokyo onther tokyo onther tokyo onther tokyo";
 
-const providerRopsten = new HDWalletProvider(mnemonic, providerUrl, 0, 50);
+const providerUrl = "https://ropsten.infura.io";
 
 module.exports = {
   networks: {
@@ -18,9 +20,28 @@ module.exports = {
       gas: 4700000,
       gasPrice: 20e9,
     },
+    test: {
+      network_id: "*",
+      provider() {
+        return Ganache.provider({
+          network_id: "7",
+          seed: mnemonicTest,
+          default_balance_ether: 100000,
+          total_accounts: 50,
+          debug: true,
+          logger: console,
+          port: 7544,
+          locked: false,
+        });
+      },
+      gas: 4700000,
+      gasPrice: 100e9,
+    },
     ropsten: {
       network_id: 3,
-      provider: providerRopsten,
+      provider() {
+        return new HDWalletProvider(mnemonic, providerUrl, 0, 50);
+      },
       gas: 4700000,
       gasPrice: 100e9,
     },
