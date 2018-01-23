@@ -1,10 +1,13 @@
 pragma solidity ^0.4.18;
 
 import '../zeppelin/crowdsale/RefundableCrowdsale.sol';
+import '../minime/MiniMeToken.sol';
 
-contract DeploySeparatedCrowdsale is RefundableCrowdsale {
+contract DeploySeparatedCrowdsaleForMinime is RefundableCrowdsale {
 
-  function DeploySeparatedCrowdsale (
+  MiniMeToken token;
+
+  function DeploySeparatedCrowdsaleForMinime (
       address _vault,
       address _token,
       uint256 _startTime,
@@ -13,7 +16,7 @@ contract DeploySeparatedCrowdsale is RefundableCrowdsale {
       uint256 _goal
     ) {
       vault = RefundVault(_vault);
-      token = MintableToken(_token);
+      token = MiniMeToken(_token);
       startTime = _startTime;
       endTime = _endTime;
       rate = _rate;

@@ -1,10 +1,10 @@
 pragma solidity ^0.4.18;
 
-import "./BuyModularizedCrowdsale.sol";
+import "./HookedCrowdsale.sol";
 import "./DeploySeparatedCrowdsale.sol";
 import "../zeppelin/crowdsale/CappedCrowdsale.sol";
 
-contract BaseCrowdsale is BuyModularizedCrowdsale, DeploySeparatedCrowdsale, CappedCrowdsale {
+contract BaseCrowdsale is HookedCrowdsale, DeploySeparatedCrowdsale, CappedCrowdsale {
 
   address nextTokenOwner;
 
@@ -24,7 +24,9 @@ contract BaseCrowdsale is BuyModularizedCrowdsale, DeploySeparatedCrowdsale, Cap
       _endTime,
       _rate,
       _goal
-      ) CappedCrowdsale (_cap) {}
+      ) CappedCrowdsale (_cap) {
+        nextTokenOwner = _nextTokenOwner;
+      }
 
   function calculateToFund(uint256 _weiAmount) internal view returns (uint256) {
     uint256 toFund;
@@ -38,12 +40,20 @@ contract BaseCrowdsale is BuyModularizedCrowdsale, DeploySeparatedCrowdsale, Cap
     return toFund;
   }
 
-  function tokenGeneration(uint256 _beneficiary, uint256 _tokens) internal {
+  function tokenGeneration(address _beneficiary, uint256 _tokens) internal {
     token.mint(_beneficiary, _tokens);
+  }
+
+  function finalizationSuccessHook() internal {
+    transferTokenOwnership();
+  }
+
+  function transferTokenOwnership() internal {
+    token.transferOwnership(nextTokenOwner);
   }
 
   function validPurchase() internal view returns (bool) {
     bool withinCap = weiRaised <= cap;
-    return withinCap && BuyModularizedCrowdsale.validPurchase();
+    return withinCap && Crowdsale.validPurchase();
   }
 }

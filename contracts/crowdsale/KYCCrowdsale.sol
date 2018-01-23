@@ -8,7 +8,7 @@ contract KYCCrowdsale {
   KYC kyc;
 
   function KYCCrowdsale (address _kyc) {
-    require(_kyc !== 0x0);
+    require(_kyc != 0x0);
     kyc = KYC(_kyc);
   }
 
