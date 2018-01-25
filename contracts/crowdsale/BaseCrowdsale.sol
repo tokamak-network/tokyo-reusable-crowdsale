@@ -91,7 +91,7 @@ contract BaseCrowdsale is Ownable {
       msg.sender.transfer(toReturn);
     }
 
-    tokenGeneration(beneficiary, tokens);
+    generateToken(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, toFund, tokens);
     forwardFunds(toFund);
 
@@ -178,13 +178,17 @@ contract BaseCrowdsale is Ownable {
   }
 
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal;
+
   function buyTokensPostHook(address _beneficiary) internal;
+
   function finalizationFailHook() internal;
+
   function finalizationSuccessHook() internal {
     transferTokenOwnership(nextTokenOwner);
   }
 
-  function tokenGeneration(address _beneficiary, uint256 _tokens) internal;
+  function generateToken(address _beneficiary, uint256 _tokens) internal;
+
   function transferTokenOwnership(address _to) internal;
 
 }

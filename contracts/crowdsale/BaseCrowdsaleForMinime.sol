@@ -30,7 +30,7 @@ contract BaseCrowdsaleForMinime is BaseCrowdsale {
       }
 
 
-  function tokenGeneration(address _beneficiary, uint256 _tokens) internal {
+  function generateToken(address _beneficiary, uint256 _tokens) internal {
     token.generateTokens(_beneficiary, _tokens);
   }
 

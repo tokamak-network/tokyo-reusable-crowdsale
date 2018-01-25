@@ -14,7 +14,7 @@ contract HolderBase is Ownable {
 
   uint256 public ratioCoeff;
   bool public distributed;
-  bool public initiated;
+  bool public initialized;
 
   struct Holder {
     address addr;
@@ -38,7 +38,7 @@ contract HolderBase is Ownable {
     require(_addrs.length == _ratios.length);
     uint256 accRatio;
 
-    initiated = true;
+    initialized = true;
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));
