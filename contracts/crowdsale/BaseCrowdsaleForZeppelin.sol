@@ -1,13 +1,13 @@
 pragma solidity ^0.4.18;
 
 import "./BaseCrowdsale.sol";
-import "../minime/MiniMeToken.sol";
+import "../zeppelin/token/MintableToken.sol";
 
-contract BaseCrowdsaleForMinime is BaseCrowdsale {
+contract BaseCrowdsaleForZeppelin is BaseCrowdsale {
 
-  MiniMeToken token;
+  MintableToken token;
 
-  function BaseCrowdsaleForMinime (
+  function BaseCrowdsaleForZeppelin (
     uint256 _startTime,
     uint256 _endTime,
     uint256 _rate,
@@ -26,16 +26,16 @@ contract BaseCrowdsaleForMinime is BaseCrowdsale {
       _nextTokenOwner
       ) {
         require(_token != address(0));
-        token = MiniMeToken(_token);
+        token = MintableToken(_token);
       }
 
 
   function tokenGeneration(address _beneficiary, uint256 _tokens) internal {
-    token.generateTokens(_beneficiary, _tokens);
+    token.mint(_beneficiary, _tokens);
   }
 
   function transferTokenOwnership(address _to) internal {
-    token.changeController(_to);
+    token.transferOwnership(_to);
   }
 
 }

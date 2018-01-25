@@ -1,18 +1,15 @@
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
-import "../zeppelin/ownership/Ownable.sol";
+import "./BaseCrowdsale.sol";
 
 /**
  * @title MinimunPaymentCrowdsale
  * @notice To buy tokens, purchaser should make payment with minimun amount of ether.
  */
-contract MinimunPaymentCrowdsale is Crowdsale {
+contract MinimunPaymentCrowdsale is BaseCrowdsale {
   uint256 public minPayment;
 
-  function MinimunPaymentCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _minPayment)
-    public
-    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+  function MinimunPaymentCrowdsale(uint256 _minPayment) public {
     require(minPayment != 0);
     minPayment = _minPayment;
   }

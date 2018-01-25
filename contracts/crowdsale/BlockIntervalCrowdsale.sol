@@ -1,19 +1,16 @@
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
-import "./HookedCrowdsale.sol";
+import "./BaseCrowdsale.sol";
 
 /**
  * @title BlockIntervalCrowdsale
  * @notice BlockIntervalCrowdsale limit purchaser to take participate too frequently.
  */
-contract BlockIntervalCrowdsale is Crowdsale, HookedCrowdsale {
+contract BlockIntervalCrowdsale is BaseCrowdsale {
   uint256 public blockInterval;
   mapping (address => uint256) public recentBlock;
 
-  function BlockIntervalCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _blockInterval)
-    public
-    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+  function BlockIntervalCrowdsale(uint256 _blockInterval) public {
       require(_blockInterval != 0);
       blockInterval = _blockInterval;
     }
@@ -29,7 +26,7 @@ contract BlockIntervalCrowdsale is Crowdsale, HookedCrowdsale {
   /**
    * @notice save the block number
    */
-  function afterBuyTokens(address) internal {
+  function buyTokensPostHook(address _beneficiary) internal {
     recentBlock[msg.sender] = block.number;
   }
 }

@@ -2,7 +2,7 @@
 
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
+import "./BaseCrowdsale.sol";
 import "../zeppelin/ownership/Ownable.sol";
 
 
@@ -12,7 +12,7 @@ import "../zeppelin/ownership/Ownable.sol";
 * Based on references from OpenZeppelin: https://github.com/OpenZeppelin/zeppelin-solidity
 *
 */
-contract BonusCrowdsale is Crowdsale, Ownable {
+contract BonusCrowdsale is BaseCrowdsale {
 
     // Constants
     // The following will be populated by main crowdsale contract

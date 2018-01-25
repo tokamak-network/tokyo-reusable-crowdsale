@@ -27,7 +27,7 @@ contract KYC is Ownable {
     _;
   }
 
-  function KYC() {
+  function KYC() public {
     admin[msg.sender] = true;
   }
 
