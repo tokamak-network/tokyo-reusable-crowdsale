@@ -2,7 +2,7 @@
 
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
+import "./BaseCrowdsale.sol";
 import "../zeppelin/ownership/Ownable.sol";
 
 
@@ -12,7 +12,7 @@ import "../zeppelin/ownership/Ownable.sol";
 * Based on references from OpenZeppelin: https://github.com/OpenZeppelin/zeppelin-solidity
 *
 */
-contract BonusCrowdsale is Crowdsale, Ownable {
+contract BonusCrowdsale is BaseCrowdsale {
 
     // Constants
     // The following will be populated by main crowdsale contract
@@ -21,17 +21,6 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     uint32[] public BONUS_AMOUNTS;
     uint32[] public BONUS_AMOUNTS_VALUES;
     uint public constant BONUS_COEFF = 1000; // Values should be 10x percents, value 1000 = 100%
-
-    // Members
-    uint public tokenPriceInCents;
-
-    /**
-    * @dev Contructor
-    * @param _tokenPriceInCents token price in USD cents. The price is fixed
-    */
-    function BonusCrowdsale(uint256 _tokenPriceInCents) public {
-        tokenPriceInCents = _tokenPriceInCents;
-    }
 
     /**
     * @dev Retrieve length of bonuses by time array
@@ -78,7 +67,7 @@ contract BonusCrowdsale is Crowdsale, Ownable {
     /**
     * @notice Overrided getTokenAmount function of parent Crowdsale contract
       to calculate the token with time and amount bonus.
-    * @param beneficiary walelt of investor to receive tokens
+    * @param weiAmount walelt of investor to receive tokens
     */
     function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
         // Compute time and amount bonus

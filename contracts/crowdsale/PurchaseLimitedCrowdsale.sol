@@ -1,41 +1,31 @@
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
-import "../zeppelin/ownership/Ownable.sol";
+import "./BaseCrowdsale.sol";
 
 /**
  * @title PurchaseLimitedCrowdsale
  * @notice Limit a single purchaser from funding too many ether.
  */
-contract PurchaseLimitedCrowdsale is Crowdsale {
+contract PurchaseLimitedCrowdsale is BaseCrowdsale {
   mapping (address => uint256) public purchaseFunded;
   uint256 public purchaseLimit;
 
-  function PurchaseLimitedCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _purchaseLimit)
-    public
-    Crowdsale(_startTime, _endTime, _rate, _wallet) {
+  function PurchaseLimitedCrowdsale(uint256 _purchaseLimit) public {
     require(_purchaseLimit != 0);
     purchaseLimit = _purchaseLimit;
   }
 
-  /**
-   * @dev Record the accumulated amount of purchaser to fund after
-   * super.buyTokens() called.
-   */
-  function buyTokens(address beneficiary) public payable {
-    super.buyTokens(beneficiary);
-    purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
+  function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
+    uint256 toFund;
+    toFund = super.calculateToFund();
+
+    if (purchaseFunded[_beneficiary].add(toFund) > purchaseLimit)
+      toFund = purchaseLimit.sub(purchaseFunded[_beneficiary])
+
+    return toFund;
   }
 
-  /**
-   * @return true if purchaser didn't exceed the limit.
-   */
-  function validPurchase() internal view returns (bool) {
-    bool underLimit = purchaseFunded[msg.sender].add(msg.value) <= purchaseLimit;
-    return underLimit && super.validPurchase();
-  }
-
-  function afterBuyTokens() internal {
-    purchaseFunded[msg.sender] = purchaseFunded[msg.sender].add(msg.value);
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
+    purchaseFunded[_beneficiary] = purchaseFunded[_beneficiary].add(_toFund);
   }
 }
