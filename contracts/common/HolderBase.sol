@@ -2,7 +2,7 @@ pragma solidity ^0.4.18;
 
 import '../zeppelin/math/SafeMath.sol';
 import '../zeppelin/ownership/Ownable.sol';
-import '../zeppelin/token/ERC20.sol';
+import '../zeppelin/token/ERC20/ERC20.sol';
 
 /**
  * @title HolderBase
@@ -14,6 +14,7 @@ contract HolderBase is Ownable {
 
   uint256 public ratioCoeff;
   bool public distributed;
+  bool public initialized;
 
   struct Holder {
     address addr;
@@ -32,9 +33,12 @@ contract HolderBase is Ownable {
   }
 
   function initHolders(address[] _addrs, uint256[] _ratios) public onlyOwner {
+
     require(holders.length == 0);
     require(_addrs.length == _ratios.length);
     uint256 accRatio;
+
+    initialized = true;
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));

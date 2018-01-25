@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "../zeppelin/crowdsale/Crowdsale.sol";
+import "./BaseCrowdsale.sol";
 import "./BlockIntervalCrowdsale.sol";
 import "./PurchaseLimitedCrowdsale.sol";
 
@@ -8,20 +8,28 @@ import "./PurchaseLimitedCrowdsale.sol";
  * @title SampleAfterBuyTokensCrowdsale
  * @notice SampleAfterBuyTokensCrowdsale limit purchaser to take participate too frequently.
  */
-contract SampleAfterBuyTokensCrowdsale is Crowdsale, BlockIntervalCrowdsale, PurchaseLimitedCrowdsale {
+contract SampleAfterBuyTokensCrowdsale is BaseCrowdsale, BlockIntervalCrowdsale, PurchaseLimitedCrowdsale {
 
-  function SampleAfterBuyTokensCrowdsale(uint256 _startTime, uint256 _endTime, uint256 _rate, address _wallet, uint256 _blockInterval, uint256 _purchaseLimit)
-    public
-    Crowdsale(_startTime, _endTime, _rate, _wallet)
-    BlockIntervalCrowdsale(_startTime, _endTime, _rate, _wallet, _blockInterval)
-    PurchaseLimitedCrowdsale(_startTime, _endTime, _rate, _wallet, _purchaseLimit) {}
-
-  /**
-   * @notice save block number condition after call super.buyTokens function.
-   */
-  function buyTokens(address beneficiary) public payable {
-    Crowdsale.buyTokens(beneficiary);
-    BlockIntervalCrowdsale.afterBuyTokens();
-    PurchaseLimitedCrowdsale.afterBuyTokens();
-  }
+  function SampleAfterBuyTokensCrowdsale(
+    uint256 _startTime,
+    uint256 _endTime,
+    uint256 _rate,
+    uint256 _cap,
+    uint256 _goal,
+    address _vault,
+    address _nextTokenOwner,
+    uint256 _blockInterval,
+    uint256 _purchaseLimit
+    ) public
+    BaseCrowdsale (
+      _startTime,
+      _endTime,
+      _rate,
+      _cap,
+      _goal,
+      _vault,
+      _nextTokenOwner
+      )
+    BlockIntervalCrowdsale(_blockInterval)
+    PurchaseLimitedCrowdsale(_purchaseLimit) {}
 }

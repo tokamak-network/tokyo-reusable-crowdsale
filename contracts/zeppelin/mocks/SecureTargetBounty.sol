@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import {Bounty, Target} from "../../contracts/Bounty.sol";
+import {Bounty, Target} from "../Bounty.sol";
 
 
 contract SecureTargetMock is Target {
