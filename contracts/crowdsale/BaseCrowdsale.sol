@@ -76,12 +76,12 @@ contract BaseCrowdsale is Ownable {
 
     uint256 weiAmount = msg.value;
 
-    uint256 toFund = calculateToFund(weiAmount);
+    uint256 toFund = calculateToFund(beneficiary, weiAmount);
     uint256 toReturn = weiAmount.sub(toFund);
     require(toFund > 0);
 
     buyTokensPreHook(beneficiary, toFund);
-    
+
     // calculate token amount to be created
     uint256 tokens = getTokenAmount(toFund);
 

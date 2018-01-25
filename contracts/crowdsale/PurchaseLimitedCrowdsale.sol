@@ -17,10 +17,10 @@ contract PurchaseLimitedCrowdsale is BaseCrowdsale {
 
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
     uint256 toFund;
-    toFund = super.calculateToFund();
+    toFund = super.calculateToFund(_beneficiary, _weiAmount);
 
     if (purchaseFunded[_beneficiary].add(toFund) > purchaseLimit)
-      toFund = purchaseLimit.sub(purchaseFunded[_beneficiary])
+      toFund = purchaseLimit.sub(purchaseFunded[_beneficiary]);
 
     return toFund;
   }
