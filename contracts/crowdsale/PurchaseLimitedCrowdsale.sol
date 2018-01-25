@@ -15,10 +15,17 @@ contract PurchaseLimitedCrowdsale is BaseCrowdsale {
     purchaseLimit = _purchaseLimit;
   }
 
-  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
-    bool underLimit = purchaseFunded[_beneficiary].add(_toFund) <= purchaseLimit;
-    require(underLimit);
+  function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
+    uint256 toFund;
+    toFund = super.calculateToFund();
 
+    if (purchaseFunded[_beneficiary].add(toFund) > purchaseLimit)
+      toFund = purchaseLimit.sub(purchaseFunded[_beneficiary])
+
+    return toFund;
+  }
+
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
     purchaseFunded[_beneficiary] = purchaseFunded[_beneficiary].add(_toFund);
   }
 }

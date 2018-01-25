@@ -78,9 +78,10 @@ contract BaseCrowdsale is Ownable {
 
     uint256 toFund = calculateToFund(weiAmount);
     uint256 toReturn = weiAmount.sub(toFund);
+    require(toFund > 0);
 
     buyTokensPreHook(beneficiary, toFund);
-
+    
     // calculate token amount to be created
     uint256 tokens = getTokenAmount(toFund);
 
@@ -165,7 +166,7 @@ contract BaseCrowdsale is Ownable {
     return withinPeriod && nonZeroPurchase;
   }
 
-  function calculateToFund(uint256 _weiAmount) internal view returns (uint256) {
+  function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
     uint256 toFund;
     uint256 postWeiRaised = weiRaised.add(_weiAmount);
 
