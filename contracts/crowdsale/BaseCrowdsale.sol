@@ -92,7 +92,7 @@ contract BaseCrowdsale is Ownable {
       msg.sender.transfer(toReturn);
     }
 
-    generateToken(beneficiary, tokens);
+    generateTokens(beneficiary, tokens);
     TokenPurchase(msg.sender, beneficiary, toFund, tokens);
     forwardFunds(toFund);
 
@@ -178,8 +178,14 @@ contract BaseCrowdsale is Ownable {
     return toFund;
   }
 
+  /**
+   * @notice pre hook for buyTokens function
+   */
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal;
 
+  /**
+   * @notice post hook for buyTokens function
+   */
   function buyTokensPostHook(address _beneficiary) internal;
 
   function finalizationFailHook() internal;
@@ -188,7 +194,10 @@ contract BaseCrowdsale is Ownable {
     transferTokenOwnership(nextTokenOwner);
   }
 
-  function generateToken(address _beneficiary, uint256 _tokens) internal;
+  /**
+   * @notice interface to generate token for both MiniMe & Zeppelin(Mintable) token.
+   */
+  function generateTokens(address _beneficiary, uint256 _tokens) internal;
 
   function transferTokenOwnership(address _to) internal;
 

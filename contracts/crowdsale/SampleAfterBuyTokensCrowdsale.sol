@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-import "./BaseCrowdsaleForZeppelin.sol";
+import "./ZeppelinBaseCrowdsale.sol";
 import "./BlockIntervalCrowdsale.sol";
 import "./PurchaseLimitedCrowdsale.sol";
 
@@ -8,7 +8,7 @@ import "./PurchaseLimitedCrowdsale.sol";
  * @title SampleAfterBuyTokensCrowdsale
  * @notice SampleAfterBuyTokensCrowdsale limit purchaser to take participate too frequently.
  */
-contract SampleAfterBuyTokensCrowdsale is BaseCrowdsaleForZeppelin, BlockIntervalCrowdsale, PurchaseLimitedCrowdsale {
+contract SampleAfterBuyTokensCrowdsale is ZeppelinBaseCrowdsale, BlockIntervalCrowdsale, PurchaseLimitedCrowdsale {
 
   function SampleAfterBuyTokensCrowdsale(
     uint256 _startTime,
@@ -22,7 +22,7 @@ contract SampleAfterBuyTokensCrowdsale is BaseCrowdsaleForZeppelin, BlockInterva
     uint256 _blockInterval,
     uint256 _purchaseLimit
     ) public
-    BaseCrowdsaleForZeppelin (
+    ZeppelinBaseCrowdsale (
       _startTime,
       _endTime,
       _rate,

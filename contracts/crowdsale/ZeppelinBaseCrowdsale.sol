@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 import "./BaseCrowdsale.sol";
 import "../zeppelin/token/MintableToken.sol";
 
-contract BaseCrowdsaleForZeppelin is BaseCrowdsale {
+contract ZeppelinBaseCrowdsale is BaseCrowdsale {
 
   MintableToken token;
 
-  function BaseCrowdsaleForZeppelin (
+  function ZeppelinBaseCrowdsale (
     uint256 _startTime,
     uint256 _endTime,
     uint256 _rate,
@@ -30,7 +30,7 @@ contract BaseCrowdsaleForZeppelin is BaseCrowdsale {
       }
 
 
-  function generateToken(address _beneficiary, uint256 _tokens) internal {
+  function generateTokens(address _beneficiary, uint256 _tokens) internal {
     token.mint(_beneficiary, _tokens);
   }
 

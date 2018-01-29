@@ -20,7 +20,12 @@ contract BonusCrowdsale is BaseCrowdsale {
     uint32[] public BONUS_TIMES_VALUES;
     uint32[] public BONUS_AMOUNTS;
     uint32[] public BONUS_AMOUNTS_VALUES;
-    uint public constant BONUS_COEFF = 1000; // Values should be 10x percents, value 1000 = 100%
+    uint public BONUS_COEFF; // Values should be 10x percents, value 1000 = 100%
+
+    function BonusCrowdsale(_BONUS_COEFF) public {
+      require(BONUS_COEFF != 0);
+      BONUS_COEFF = _BONUS_COEFF;
+    }
 
     /**
     * @dev Retrieve length of bonuses by time array

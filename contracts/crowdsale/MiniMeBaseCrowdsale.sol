@@ -3,11 +3,11 @@ pragma solidity ^0.4.18;
 import "./BaseCrowdsale.sol";
 import "../minime/MiniMeToken.sol";
 
-contract BaseCrowdsaleForMinime is BaseCrowdsale {
+contract MiniMeBaseCrowdsale is BaseCrowdsale {
 
   MiniMeToken token;
 
-  function BaseCrowdsaleForMinime (
+  function MiniMeBaseCrowdsale (
     uint256 _startTime,
     uint256 _endTime,
     uint256 _rate,
@@ -30,7 +30,7 @@ contract BaseCrowdsaleForMinime is BaseCrowdsale {
       }
 
 
-  function generateToken(address _beneficiary, uint256 _tokens) internal {
+  function generateTokens(address _beneficiary, uint256 _tokens) internal {
     token.generateTokens(_beneficiary, _tokens);
   }
 
