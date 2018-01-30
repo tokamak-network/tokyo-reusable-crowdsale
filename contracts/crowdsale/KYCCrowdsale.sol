@@ -3,6 +3,10 @@ pragma solidity ^0.4.18;
 import "./BaseCrowdsale.sol";
 import "../kyc/KYC.sol";
 
+/**
+ * @title KYCCrowdsale
+ * @notice KYCCrowdsale checks kyc information and
+ */
 contract KYCCrowdsale is BaseCrowdsale {
 
   KYC kyc;
@@ -12,7 +16,7 @@ contract KYCCrowdsale is BaseCrowdsale {
     kyc = KYC(_kyc);
   }
 
-  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {
-    require(kyc.registeredAddress(_beneficiary));
+  function registered(address _addr) public view returns (bool) {
+    return kyc.registeredAddress(_addr);
   }
 }

@@ -13,6 +13,9 @@ contract BaseCrowdsale is Ownable {
   // how many token units a buyer gets per wei
   uint256 public rate;
 
+  // base to calculate percentage
+  uint256 public coeff;
+
   // amount of raised money in wei
   uint256 public weiRaised;
 
@@ -42,6 +45,7 @@ contract BaseCrowdsale is Ownable {
     uint256 _startTime,
     uint256 _endTime,
     uint256 _rate,
+    uint256 _coeff,
     uint256 _cap,
     uint256 _goal,
     address _vault,
@@ -52,6 +56,7 @@ contract BaseCrowdsale is Ownable {
     require(_startTime >= now);
     require(_endTime >= _startTime);
     require(_rate > 0);
+    require(_coeff > 0);
     require(_cap > 0);
     require(_vault != address(0));
     require(_nextTokenOwner != address(0));
@@ -59,6 +64,7 @@ contract BaseCrowdsale is Ownable {
     startTime = _startTime;
     endTime = _endTime;
     rate = _rate;
+    coeff = _coeff;
     cap = _cap;
     goal = _goal;
     vault = MultiHolderVault(_vault);
