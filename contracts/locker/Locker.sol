@@ -12,6 +12,13 @@ contract Locker is Ownable {
   using SafeMath for uint;
   using SafeERC20 for ERC20Basic;
 
+  /**
+   * It is init state only when adding release info is possible.
+   * beneficiary only can release tokens when Locker is active.
+   * After all tokens are released, locker is drawn.
+   */
+  enum State { Init, Ready, Active, Drawn }
+
   struct Beneficiary {
     uint ratio;             // ratio based on Locker's initial balance.
     uint withdrawAmount;    // accumulated tokens beneficiary released
@@ -80,16 +87,16 @@ contract Locker is Ownable {
     uint[] releaseRatios;   //
   }
 
-  // beneficiary only can release tokens when Locker is active.
-  bool public isActive;
+
 
   uint public activeTime;
 
   // ERC20 basic token contract being held
   ERC20Basic public token;
 
-  uint coeff;
-  uint initialBalance;
+  uint public coeff;
+  uint public initialBalance;
+  uint public withdrawAmount; // total amount of tokens released
 
   mapping (address => Beneficiary) beneficiaries;
   mapping (address => Release) releases;  // beneficiary's lock
@@ -98,8 +105,10 @@ contract Locker is Ownable {
   uint public numBeneficiaries;
   uint public numLocks;
 
-  modifier onlyActive(bool v) {
-    require(isActive == v);
+  State public state;
+
+  modifier onlyState(State v) {
+    require(state == v);
     _;
   }
 
@@ -128,7 +137,7 @@ contract Locker is Ownable {
     require(coeff == accRatio);
   }
 
-  function activate() external onlyOwner onlyActive(false) {
+  function activate() external onlyOwner onlyState(State.Ready) {
     require(!isActive);
     require(numLocks == numBeneficiaries);
 
@@ -137,13 +146,13 @@ contract Locker is Ownable {
 
     activeTime = now;
 
-    isActive = true;
+    state = State.Active;
   }
 
   function lock(address _beneficiary, bool _isStraight, uint[] _releaseTimes, uint[] _releaseRatios)
     external
     onlyOwner
-    onlyActive(false)
+    onlyState(State.Init)
     onlyBeneficiary(_beneficiary)
   {
     require(!locked[_beneficiary]);
@@ -167,19 +176,31 @@ contract Locker is Ownable {
       releaseTimes: _releaseTimes,
       releaseRatios: _releaseRatios
     });
+
+    if (numLocks == numBeneficiaries) {
+      state = State.Ready;
+    }
   }
 
   /**
    * @dev release releasable tokens to beneficiary
    */
-  function release() external onlyActive(true) onlyBeneficiary(_beneficiary) {
+  function release() external onlyState(State.Active) onlyBeneficiary(_beneficiary) {
     require(!beneficiaries[_beneficiary].releaseAllTokens);
 
     uint releasableAmount = getReleasableAmount(msg.sender);
     beneficiaries[_beneficiary].releaseAmount = beneficiaries[_beneficiary].releaseAmount.add(releasableAmount);
 
-    beneficiaries[_beneficiary].releaseAllTokens =
-      beneficiaries[_beneficiary].releaseAmount == getPartialAmount(beneficiaries[_beneficiary].ratio, coeff, initialBalance);
+    beneficiaries[_beneficiary].releaseAllTokens = beneficiaries[_beneficiary].releaseAmount == getPartialAmount(
+        beneficiaries[_beneficiary].ratio,
+        coeff,
+        initialBalance);
+
+    withdrawAmount = withdrawAmount.add(releasableAmount);
+
+    if (withdrawAmount == initialBalance) {
+      state = State.Drawn;
+    }
 
     token.transfer(msg.sender, releasableAmount);
   }
