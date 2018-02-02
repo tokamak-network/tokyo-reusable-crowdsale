@@ -13,13 +13,13 @@ contract Locker is Ownable {
   using SafeERC20 for ERC20Basic;
 
   struct Beneficiary {
-    uint ratio;             // designated ratio based on initial Locker's tokens
+    uint ratio;             // ratio based on Locker's initial balance.
     uint withdrawAmount;    // accumulated tokens beneficiary released
     bool releaseAllTokens;
   }
 
   /**
-   * @notice Lock has info to release tokens.
+   * @notice Release has info to release tokens.
    * If lock type is straight, only two release infos is required.
    *
    *     |
@@ -30,7 +30,7 @@ contract Locker is Ownable {
    *     |       .   |
    *     |     .     |
    *     +===+=======+----*----------> time
-   *       Lock  First    Second
+   *     Locker  First    Second
    *  Activated  Release  Release
    *
    *
@@ -44,7 +44,7 @@ contract Locker is Ownable {
    *  30 |            _________|
    *     |           |
    *     +===+=======+---------+----------*------> time
-   *       Lock   First        Second     Last
+   *     Locker   First        Second     Last
    *  Activated   Release      Release    Release
    *
    *
@@ -74,7 +74,7 @@ contract Locker is Ownable {
    *   ]
    *
    */
-  struct Lock {
+  struct Release {
     bool isStraight;        // lock type : straight or variable
     uint[] releaseTimes;    //
     uint[] releaseRatios;   //
@@ -92,7 +92,7 @@ contract Locker is Ownable {
   uint initialBalance;
 
   mapping (address => Beneficiary) beneficiaries;
-  mapping (address => Lock) locks;  // beneficiary's lock
+  mapping (address => Release) releases;  // beneficiary's lock
   mapping (address => bool) locked; // whether beneficiary's lock is instantiated
 
   uint public numBeneficiaries;
@@ -162,7 +162,7 @@ contract Locker is Ownable {
 
     numLocks = numLocks.add(1);
 
-    locks[_beneficiary] = Lock({
+    releases[_beneficiary] = Release({
       isStraight: _isStraight,
       releaseTimes: _releaseTimes,
       releaseRatios: _releaseRatios
@@ -194,7 +194,7 @@ contract Locker is Ownable {
 
   function getStraightReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
-    Lock memory _l = locks[_beneficiary];
+    Release memory _l = releases[_beneficiary];
 
     // total amount of tokens beneficiary will receive
     uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
@@ -213,7 +213,7 @@ contract Locker is Ownable {
 
   function getVariableReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
-    Lock memory _l = locks[_beneficiary];
+    Release memory _l = releases[_beneficiary];
 
     // total amount of tokens beneficiary will receive
     uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
