@@ -137,15 +137,18 @@ contract Locker is Ownable {
     require(coeff == accRatio);
   }
 
+  /**
+   * @notice beneficiary can release their tokens after activated
+   */
   function activate() external onlyOwner onlyState(State.Ready) {
-    require(!isActive);
-    require(numLocks == numBeneficiaries);
+    require(numLocks == numBeneficiaries); // double check : assert all releases are recorded
 
-    initialBalance = token.balanceOf(this)
+    initialBalance = token.balanceOf(this);
     require(initialBalance > 0);
 
     activeTime = now;
 
+    // set locker as active state
     state = State.Active;
   }
 
@@ -167,16 +170,22 @@ contract Locker is Ownable {
       require(_releaseRatios[i] < _releaseRatios[i + 1]);
     }
 
+    if (_isStraight) {
+      require(len == 2); // 2 release times for straight locking type
+    }
+
     locked[_beneficiary] = true;
 
     numLocks = numLocks.add(1);
 
+    // create Release for the beneficiary
     releases[_beneficiary] = Release({
       isStraight: _isStraight,
       releaseTimes: _releaseTimes,
       releaseRatios: _releaseRatios
     });
 
+    //  if all beneficiaries locked, change Locker state to change
     if (numLocks == numBeneficiaries) {
       state = State.Ready;
     }
