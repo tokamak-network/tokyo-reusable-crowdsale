@@ -2,9 +2,13 @@ pragma solidity ^0.4.18;
 
 import "../zeppelin/math/SafeMath.sol";
 import "../vault/MultiHolderVault.sol";
+import "../locker/Locker.sol";
 
 contract BaseCrowdsale is Ownable {
   using SafeMath for uint256;
+
+  bool public initialized;  // check init function
+  Locker public locker;     // token locker
 
   // start and end timestamps where investments are allowed (both inclusive)
   uint256 public startTime;
@@ -49,6 +53,7 @@ contract BaseCrowdsale is Ownable {
     uint256 _cap,
     uint256 _goal,
     address _vault,
+    address _locker,
     address _nextTokenOwner
     ) public
   {
@@ -59,6 +64,7 @@ contract BaseCrowdsale is Ownable {
     require(_coeff > 0);
     require(_cap > 0);
     require(_vault != address(0));
+    require(_locker != address(0));
     require(_nextTokenOwner != address(0));
 
     startTime = _startTime;
@@ -68,6 +74,7 @@ contract BaseCrowdsale is Ownable {
     cap = _cap;
     goal = _goal;
     vault = MultiHolderVault(_vault);
+    locker = Locker(_locker);
     nextTokenOwner = _nextTokenOwner;
   }
 
@@ -75,6 +82,11 @@ contract BaseCrowdsale is Ownable {
   function () external payable {
     buyTokens(msg.sender);
   }
+
+  /**
+   * init call super.init* function and should be implemented in tehmpate using user input
+   */
+  function init(bytes32[] args) external onlyOwner
 
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != address(0));
@@ -187,16 +199,19 @@ contract BaseCrowdsale is Ownable {
   /**
    * @notice pre hook for buyTokens function
    */
-  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal;
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {};
 
   /**
    * @notice post hook for buyTokens function
    */
-  function buyTokensPostHook(address _beneficiary) internal;
+  function buyTokensPostHook(address _beneficiary) internal {};
 
-  function finalizationFailHook() internal;
+  function finalizationFailHook() internal {};
 
   function finalizationSuccessHook() internal {
+    vault.distribute();
+    locker.activate();
+
     transferTokenOwnership(nextTokenOwner);
   }
 

@@ -14,6 +14,7 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
     uint256 _cap,
     uint256 _goal,
     address _vault,
+    address _locker,
     address _nextTokenOwner,
     address _token
     ) BaseCrowdsale (
@@ -23,6 +24,7 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
       _cap,
       _goal,
       _vault,
+      _locker,
       _nextTokenOwner
       ) {
         require(_token != address(0));
