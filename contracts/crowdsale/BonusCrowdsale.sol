@@ -20,13 +20,7 @@ contract BonusCrowdsale is BaseCrowdsale {
     uint32[] public BONUS_TIMES_VALUES;
     uint32[] public BONUS_AMOUNTS;
     uint32[] public BONUS_AMOUNTS_VALUES;
-    uint public BONUS_COEFF; // Values should be 10x percents, value 1000 = 100%
-
-    function BonusCrowdsale(_BONUS_COEFF) public {
-      require(BONUS_COEFF != 0);
-      BONUS_COEFF = _BONUS_COEFF;
-    }
-
+    
     /**
     * @dev Retrieve length of bonuses by time array
     * @return Bonuses by time array length
@@ -77,7 +71,7 @@ contract BonusCrowdsale is BaseCrowdsale {
     function getTokenAmount(uint256 weiAmount) internal view returns(uint256) {
         // Compute time and amount bonus
         uint256 bonus = computeBonus(weiAmount);
-        uint256 rateWithBonus = rate.mul(BONUS_COEFF.add(bonus)).div(BONUS_COEFF);
+        uint256 rateWithBonus = rate.mul(coeff.add(bonus)).div(coeff);
         return weiAmount.mul(rateWithBonus);
     }
 

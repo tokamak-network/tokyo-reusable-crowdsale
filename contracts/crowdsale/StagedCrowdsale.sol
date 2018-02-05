@@ -18,25 +18,53 @@ contract StagedCrowdsale is KYCCrowdsale {
     uint startTime;
     uint endTime;
     uint cap;
-    uint weiRaised;
+    uint maxPurchaseLimit;
+    uint minPurchaseLimit;
     bool kyc;
+    uint weiRaised; // stage's wei raised
   }
 
   function StagedCrowdsale(uint8 _MAX_PERIODS_COUNT) public {
     MAX_PERIODS_COUNT = _MAX_PERIODS_COUNT;
   }
 
-  function initPeriods(uint[] _startTimes, uint[] _endTimes, uint[] _capRatios, bool[] _kycs) public {
+  function initPeriods(
+    uint[] _startTimes,
+    uint[] _endTimes,
+    uint[] _capRatios,
+    uint[] _maxPurchaseLimits,
+    uint[] _minPurchaseLimits,
+    bool[] _kycs)
+    public
+  {
+    uint len = _startTimes;
+
     require(periods.length == 0); // one time init
-    reqiure(_startTimes.length == _endTimes.length
-      && _endTimes.length == _caps.length
-      && _caps.length == _kycs.length);
+    reqiure(len == _startTimes.length
+      && len == _endTimes.length
+      && len == _caps.length
+      && len == _maxPurchaseLimits.length
+      && len == _minPurchaseLimits.length);
+      && len == _kycs.length);
 
     uint periodCap;
 
-    for(uint i = 0; i < _startTimes.length; i++) {
-      periodCap = coeff.add(_capRatios[i]).mul(cap).div(coeff);
-      periods.push(Period(_startTimes[i], _endTimes[i], _caps[i], 0, _kycs[i]));
+    for (uint i = 0; i < _startTimes.length; i++) {
+      if (_capRatios[i] != 0) {
+        periodCap = coeff.add(_capRatios[i]).mul(cap).div(coeff);
+      } else {
+        periodCap = 0;
+      }
+
+      periods.push(Period{
+        startTime: _startTimes[i],
+        endTime: _endTimes[i],
+        cap: _caps[i],
+        maxPurchaseLimit: _maxPurchaseLimit[i],
+        minPurchaseLimit: _minPurchaseLimit[i],
+        kyc: _kycs[i],
+        weiRaised: 0
+      });
     }
 
     require(validPeriods());
