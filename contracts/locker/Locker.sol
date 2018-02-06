@@ -6,7 +6,7 @@ import '../zeppelin/token/ERC20/SafeERC20.sol';
 
 /**
  * @title Locker
- * @dev Locker holds tokens and releases them at a certain time.
+ * @notice Locker holds tokens and releases them at a certain time.
  */
 contract Locker is Ownable {
   using SafeMath for uint;
@@ -152,6 +152,9 @@ contract Locker is Ownable {
     state = State.Active;
   }
 
+  /**
+   * @notice add new release record for beneficiary
+   */
   function lock(address _beneficiary, bool _isStraight, uint[] _releaseTimes, uint[] _releaseRatios)
     external
     onlyOwner
@@ -192,16 +195,16 @@ contract Locker is Ownable {
   }
 
   /**
-   * @dev release releasable tokens to beneficiary
+   * @notice transfer releasable tokens for beneficiary wrt the release graph
    */
-  function release() external onlyState(State.Active) onlyBeneficiary(_beneficiary) {
-    require(!beneficiaries[_beneficiary].releaseAllTokens);
+  function release() external onlyState(State.Active) onlyBeneficiary(msg.sender) {
+    require(!beneficiaries[msg.sender].releaseAllTokens);
 
     uint releasableAmount = getReleasableAmount(msg.sender);
-    beneficiaries[_beneficiary].releaseAmount = beneficiaries[_beneficiary].releaseAmount.add(releasableAmount);
+    beneficiaries[msg.sender].releaseAmount = beneficiaries[msg.sender].releaseAmount.add(releasableAmount);
 
-    beneficiaries[_beneficiary].releaseAllTokens = beneficiaries[_beneficiary].releaseAmount == getPartialAmount(
-        beneficiaries[_beneficiary].ratio,
+    beneficiaries[msg.sender].releaseAllTokens = beneficiaries[msg.sender].releaseAmount == getPartialAmount(
+        beneficiaries[msg.sender].ratio,
         coeff,
         initialBalance);
 
@@ -222,6 +225,11 @@ contract Locker is Ownable {
     }
   }
 
+  /**
+   * @notice return releaseable amount for beneficiary in case of straight type of release
+   * @params _beneficiary address to hold tokens
+   * @return releaseable amount
+   */
   function getStraightReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
     Release memory _r = releases[_beneficiary];
@@ -241,6 +249,11 @@ contract Locker is Ownable {
     releasableAmount = releasableAmount.sub(_b.withdrawAmount);
   }
 
+  /**
+   * @notice return releaseable amount for beneficiary in case of variable type of release
+   * @params _beneficiary address to hold tokens
+   * @return releaseable amount
+   */
   function getVariableReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
     Release memory _r = releases[_beneficiary];
@@ -266,7 +279,7 @@ contract Locker is Ownable {
   }
 
   /// https://github.com/0xProject/0x.js/blob/05aae368132a81ddb9fd6a04ac5b0ff1cbb24691/packages/contracts/src/current/protocol/Exchange/Exchange.sol#L497
-  /// @dev Calculates partial value given a numerator and denominator.
+  /// @notice Calculates partial value given a numerator and denominator.
   /// @param numerator Numerator.
   /// @param denominator Denominator.
   /// @param target Value to calculate partial of.
