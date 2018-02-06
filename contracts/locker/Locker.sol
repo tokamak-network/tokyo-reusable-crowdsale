@@ -265,7 +265,7 @@ contract Locker is Ownable {
     releasableAmount = releasableAmount.sub(_b.withdrawAmount);
   }
 
-  /// https://github.com/0xProject/0x.js/blob/development/packages/contracts/contracts/Exchange.sol#L497
+  /// https://github.com/0xProject/0x.js/blob/05aae368132a81ddb9fd6a04ac5b0ff1cbb24691/packages/contracts/src/current/protocol/Exchange/Exchange.sol#L497
   /// @dev Calculates partial value given a numerator and denominator.
   /// @param numerator Numerator.
   /// @param denominator Denominator.
