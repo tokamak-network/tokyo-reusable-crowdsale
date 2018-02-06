@@ -224,13 +224,13 @@ contract Locker is Ownable {
 
   function getStraightReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
-    Release memory _l = releases[_beneficiary];
+    Release memory _r = releases[_beneficiary];
 
     // total amount of tokens beneficiary will receive
     uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
 
-    uint firstTime = _l.releaseTimes[0];
-    uint secondTime = _l.releaseTimes[1];
+    uint firstTime = _r.releaseTimes[0];
+    uint secondTime = _r.releaseTimes[1];
 
     require(now < firstTime); // pass if can release
 
@@ -243,16 +243,16 @@ contract Locker is Ownable {
 
   function getVariableReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
-    Release memory _l = releases[_beneficiary];
+    Release memory _r = releases[_beneficiary];
 
     // total amount of tokens beneficiary will receive
     uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
 
     uint releaseRatio;
 
-    for(uint i = 0; i < _l.releaseTimes.length; i++) {
-      if (now > _l.releaseTimes[i]) {
-        releaseRatio = _l.releaseRatios[i];
+    for(uint i = 0; i < _r.releaseTimes.length; i++) {
+      if (now > _r.releaseTimes[i]) {
+        releaseRatio = _r.releaseRatios[i];
       }
     }
 
