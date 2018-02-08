@@ -7,29 +7,10 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
 
   MiniMeToken token;
 
-  function MiniMeBaseCrowdsale (
-    uint256 _startTime,
-    uint256 _endTime,
-    uint256 _rate,
-    uint256 _cap,
-    uint256 _goal,
-    address _vault,
-    address _locker,
-    address _nextTokenOwner,
-    address _token
-    ) BaseCrowdsale (
-      _startTime,
-      _endTime,
-      _rate,
-      _cap,
-      _goal,
-      _vault,
-      _locker,
-      _nextTokenOwner
-      ) {
-        require(_token != address(0));
-        token = MiniMeToken(_token);
-      }
+  function MiniMeBaseCrowdsale (address _token) {
+    require(_token != address(0));
+    token = MiniMeToken(_token);
+  }
 
 
   function generateTokens(address _beneficiary, uint256 _tokens) internal {

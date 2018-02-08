@@ -7,29 +7,10 @@ contract ZeppelinBaseCrowdsale is BaseCrowdsale {
 
   MintableToken token;
 
-  function ZeppelinBaseCrowdsale (
-    uint256 _startTime,
-    uint256 _endTime,
-    uint256 _rate,
-    uint256 _cap,
-    uint256 _goal,
-    address _vault,
-    address _locker,
-    address _nextTokenOwner,
-    address _token
-    ) BaseCrowdsale (
-      _startTime,
-      _endTime,
-      _rate,
-      _cap,
-      _goal,
-      _vault,
-      _locker,
-      _nextTokenOwner
-      ) {
-        require(_token != address(0));
-        token = MintableToken(_token);
-      }
+  function ZeppelinBaseCrowdsale (address _token) {
+    require(_token != address(0));
+    token = MintableToken(_token);
+  }
 
 
   function generateTokens(address _beneficiary, uint256 _tokens) internal {
