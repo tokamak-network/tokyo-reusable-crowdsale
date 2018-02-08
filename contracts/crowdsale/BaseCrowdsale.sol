@@ -199,14 +199,14 @@ contract BaseCrowdsale is Ownable {
   /**
    * @notice pre hook for buyTokens function
    */
-  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {};
+  function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {}
 
   /**
    * @notice post hook for buyTokens function
    */
-  function buyTokensPostHook(address _beneficiary) internal {};
+  function buyTokensPostHook(address _beneficiary) internal {}
 
-  function finalizationFailHook() internal {};
+  function finalizationFailHook() internal {}
 
   function finalizationSuccessHook() internal {
     vault.distribute();

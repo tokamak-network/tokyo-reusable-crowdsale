@@ -227,8 +227,6 @@ contract Locker is Ownable {
 
   /**
    * @notice return releaseable amount for beneficiary in case of straight type of release
-   * @params _beneficiary address to hold tokens
-   * @return releaseable amount
    */
   function getStraightReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
@@ -251,8 +249,6 @@ contract Locker is Ownable {
 
   /**
    * @notice return releaseable amount for beneficiary in case of variable type of release
-   * @params _beneficiary address to hold tokens
-   * @return releaseable amount
    */
   function getVariableReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];

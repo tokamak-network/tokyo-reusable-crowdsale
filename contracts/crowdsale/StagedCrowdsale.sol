@@ -15,56 +15,56 @@ contract StagedCrowdsale is KYCCrowdsale {
   Period[] public periods;
 
   struct Period {
-    uint startTime;
-    uint endTime;
-    uint cap;
-    uint maxPurchaseLimit;
-    uint minPurchaseLimit;
+    uint128 cap;
+    uint128 maxPurchaseLimit;
+    uint128 minPurchaseLimit;
+    uint128 weiRaised; // stage's wei raised
+    uint32 startTime;
+    uint32 endTime;
     bool kyc;
-    uint weiRaised; // stage's wei raised
   }
 
-  function StagedCrowdsale(uint8 _MAX_PERIODS_COUNT) public {
-    MAX_PERIODS_COUNT = _MAX_PERIODS_COUNT;
+  function StagedCrowdsale(uint _MAX_PERIODS_COUNT) public {
+    MAX_PERIODS_COUNT = uint8(_MAX_PERIODS_COUNT);
   }
 
   function initPeriods(
-    uint[] _startTimes,
-    uint[] _endTimes,
-    uint[] _capRatios,
-    uint[] _maxPurchaseLimits,
-    uint[] _minPurchaseLimits,
+    uint32[] _startTimes,
+    uint32[] _endTimes,
+    uint128[] _caps,
+    uint128[] _maxPurchaseLimits,
+    uint128[] _minPurchaseLimits,
     bool[] _kycs)
     public
   {
-    uint len = _startTimes;
+    uint len = _startTimes.length;
 
     require(periods.length == 0); // one time init
-    reqiure(len == _startTimes.length
+    require(len == _startTimes.length
       && len == _endTimes.length
       && len == _caps.length
       && len == _maxPurchaseLimits.length
-      && len == _minPurchaseLimits.length);
+      && len == _minPurchaseLimits.length
       && len == _kycs.length);
 
     uint periodCap;
 
     for (uint i = 0; i < _startTimes.length; i++) {
-      if (_capRatios[i] != 0) {
-        periodCap = coeff.add(_capRatios[i]).mul(cap).div(coeff);
+      if (_caps[i] != 0) {
+        periodCap = coeff.add(uint(_caps[i])).mul(uint(cap)).div(coeff);
       } else {
         periodCap = 0;
       }
 
-      periods.push(Period{
+      periods.push(Period({
         startTime: _startTimes[i],
         endTime: _endTimes[i],
-        cap: _caps[i],
-        maxPurchaseLimit: _maxPurchaseLimit[i],
-        minPurchaseLimit: _minPurchaseLimit[i],
+        cap: uint128(periodCap),
+        maxPurchaseLimit: _maxPurchaseLimits[i],
+        minPurchaseLimit: _minPurchaseLimits[i],
         kyc: _kycs[i],
         weiRaised: 0
-      });
+      }));
     }
 
     require(validPeriods());

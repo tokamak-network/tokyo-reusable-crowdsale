@@ -18,7 +18,7 @@ contract HolderBase is Ownable {
 
   struct Holder {
     address addr;
-    uint256 ratio;
+    uint96 ratio;
   }
 
   Holder[] public holders;
@@ -32,7 +32,7 @@ contract HolderBase is Ownable {
     return holders.length;
   }
 
-  function initHolders(address[] _addrs, uint256[] _ratios) public onlyOwner {
+  function initHolders(address[] _addrs, uint96[] _ratios) public onlyOwner {
     require(holders.length == 0);
     require(_addrs.length == _ratios.length);
     uint256 accRatio;
@@ -41,7 +41,7 @@ contract HolderBase is Ownable {
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));
-      accRatio = accRatio.add(holders[i].ratio);
+      accRatio = accRatio.add(uint96(_ratios[i]));
     }
 
     require(accRatio <= ratioCoeff);
@@ -59,7 +59,7 @@ contract HolderBase is Ownable {
     distributed = true;
 
     for (uint8 i = 0; i < holders.length; i++) {
-      uint256 holderAmount = balance.mul(holders[i].ratio).div(ratioCoeff);
+      uint256 holderAmount = balance.mul(uint256(holders[i].ratio)).div(ratioCoeff);
 
       holders[i].addr.transfer(holderAmount);
     }
@@ -75,7 +75,7 @@ contract HolderBase is Ownable {
     distributed = true;
 
     for (uint8 i = 0; i < holders.length; i++) {
-      uint256 holderAmount = balance.mul(holders[i].ratio).div(ratioCoeff);
+      uint256 holderAmount = balance.mul(uint256(holders[i].ratio)).div(ratioCoeff);
 
       token.transfer(holders[i].addr, holderAmount);
     }
