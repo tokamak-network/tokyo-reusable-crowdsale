@@ -18,9 +18,9 @@ contract BonusCrowdsale is BaseCrowdsale {
     // The following will be populated by main crowdsale contract
     uint32[] public BONUS_TIMES;
     uint32[] public BONUS_TIMES_VALUES;
-    uint32[] public BONUS_AMOUNTS;
+    uint128[] public BONUS_AMOUNTS;
     uint32[] public BONUS_AMOUNTS_VALUES;
-    
+
     /**
     * @dev Retrieve length of bonuses by time array
     * @return Bonuses by time array length
@@ -53,7 +53,7 @@ contract BonusCrowdsale is BaseCrowdsale {
     /**
     * @dev Sets bonuses for USD amounts
     */
-    function setBonusesForAmounts(uint32[] amounts, uint32[] values) public onlyOwner {
+    function setBonusesForAmounts(uint128[] amounts, uint32[] values) public onlyOwner {
         require(amounts.length == values.length);
         for (uint i = 0; i + 1 < amounts.length; i++) {
             require(amounts[i] > amounts[i+1]);
