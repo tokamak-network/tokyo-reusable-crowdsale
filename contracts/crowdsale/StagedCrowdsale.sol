@@ -131,17 +131,17 @@ contract StagedCrowdsale is KYCCrowdsale {
 
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
-      uint256 postWeiRaised = p.weiRaised.add(_weiAmount);
+      uint256 postWeiRaised = uint256(p.weiRaised).add(_weiAmount);
 
       if (postWeiRaised > p.cap) {
-        _weiAmount = p.cap.sub(weiRaised);
+        _weiAmount = uint256(p.cap).sub(weiRaised);
       }
     }
 
     // get `toFund` with the cap of the sale
     uint256 toFund = super.calculateToFund(_beneficiary, _weiAmount);
 
-    p.weiRaised = p.weiRaised.add(toFund);
+    p.weiRaised = uint128(toFund.add(uint256(p.weiRaised)));
 
     return toFund;
   }

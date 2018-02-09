@@ -209,7 +209,6 @@ contract BaseCrowdsale is Ownable {
   function finalizationFailHook() internal {}
 
   function finalizationSuccessHook() internal {
-    vault.distribute();
     locker.activate();
 
     transferTokenOwnership(nextTokenOwner);
