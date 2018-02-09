@@ -151,18 +151,11 @@ contract BaseCrowdsale is Ownable {
     vault.refund(msg.sender);
   }
 
-  // We're overriding the fund forwarding from Crowdsale.
-  // In addition to sending the funds, we want to call
-  // the RefundVault deposit function
-  function forwardFunds() internal {
-    vault.deposit.value(msg.value)(msg.sender);
-  }
-
   function goalReached() public view returns (bool) {
     return weiRaised >= goal;
   }
 
-  // @return true if crowdsale event has ended
+  /// @return true if crowdsale event has ended
   function hasEnded() public view returns (bool) {
     bool capReached = weiRaised >= cap;
     return capReached || now > endTime;
@@ -173,6 +166,9 @@ contract BaseCrowdsale is Ownable {
     return weiAmount.mul(rate);
   }
 
+  /**
+   * @notice forwardd ether to vault
+   */
   function forwardFunds(uint256 toFund) internal {
     vault.deposit.value(toFund)(msg.sender);
   }
@@ -184,6 +180,9 @@ contract BaseCrowdsale is Ownable {
     return withinPeriod && nonZeroPurchase;
   }
 
+  /**
+   * @notice calculate fund wrt sale cap. Override this function to control ether cap.
+   */
   function calculateToFund(address _beneficiary, uint256 _weiAmount) internal view returns (uint256) {
     uint256 toFund;
     uint256 postWeiRaised = weiRaised.add(_weiAmount);

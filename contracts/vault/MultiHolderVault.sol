@@ -21,6 +21,6 @@ contract MultiHolderVault is HolderBase, RefundVault {
     require(wallet != 0x0 || initialized);
 
     super.distribute(); // distribute ether to holders
-    super.close(); // distribute ether to wallet
+    super.close(); // transfer remaining ether to wallet
   }
 }

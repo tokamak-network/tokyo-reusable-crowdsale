@@ -11,9 +11,9 @@ contract BlockIntervalCrowdsale is BaseCrowdsale {
   mapping (address => uint256) public recentBlock;
 
   function BlockIntervalCrowdsale(uint256 _blockInterval) public {
-      require(_blockInterval != 0);
-      blockInterval = _blockInterval;
-    }
+    require(_blockInterval != 0);
+    blockInterval = _blockInterval;
+  }
 
   /**
    * @return true if the block number is over the block internal.
