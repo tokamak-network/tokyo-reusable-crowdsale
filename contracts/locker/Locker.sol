@@ -114,6 +114,7 @@ contract Locker is Ownable {
 
   modifier onlyBeneficiary(address _addr) {
     require(beneficiaries[_addr].ratio > 0);
+    _;
   }
 
   function Locker(uint _coeff, address[] _beneficiaries, uint[] _ratios) public {
@@ -201,9 +202,9 @@ contract Locker is Ownable {
     require(!beneficiaries[msg.sender].releaseAllTokens);
 
     uint releasableAmount = getReleasableAmount(msg.sender);
-    beneficiaries[msg.sender].releaseAmount = beneficiaries[msg.sender].releaseAmount.add(releasableAmount);
+    beneficiaries[msg.sender].withdrawAmount = beneficiaries[msg.sender].withdrawAmount.add(releasableAmount);
 
-    beneficiaries[msg.sender].releaseAllTokens = beneficiaries[msg.sender].releaseAmount == getPartialAmount(
+    beneficiaries[msg.sender].releaseAllTokens = beneficiaries[msg.sender].withdrawAmount == getPartialAmount(
         beneficiaries[msg.sender].ratio,
         coeff,
         initialBalance);
@@ -218,7 +219,7 @@ contract Locker is Ownable {
   }
 
   function getReleasableAmount(address _beneficiary) public view returns (uint) {
-    if (beneficiaries[_beneficiary].isStraight) {
+    if (releases[_beneficiary].isStraight) {
       return getStraightReleasableAmount(_beneficiary);
     } else {
       return getVariableReleasableAmount(_beneficiary);

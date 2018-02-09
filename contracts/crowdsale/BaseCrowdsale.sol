@@ -86,7 +86,7 @@ contract BaseCrowdsale is Ownable {
   /**
    * init call super.init* function and should be implemented in tehmpate using user input
    */
-  function init(bytes32[] args) external onlyOwner
+  function init(bytes32[] args) external onlyOwner();
 
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != address(0));
