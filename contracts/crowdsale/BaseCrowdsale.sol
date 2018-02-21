@@ -7,7 +7,6 @@ import "../locker/Locker.sol";
 contract BaseCrowdsale is Ownable {
   using SafeMath for uint256;
 
-  bool public initialized;  // check init function
   Locker public locker;     // token locker
 
   // start and end timestamps where investments are allowed (both inclusive)
@@ -57,12 +56,12 @@ contract BaseCrowdsale is Ownable {
     address _nextTokenOwner
     ) public
   {
-    require(_goal > 0);
     require(_startTime >= now);
     require(_endTime >= _startTime);
     require(_rate > 0);
     require(_coeff > 0);
     require(_cap > 0);
+    require(_goal > 0);
     require(_vault != address(0));
     require(_locker != address(0));
     require(_nextTokenOwner != address(0));
@@ -82,11 +81,6 @@ contract BaseCrowdsale is Ownable {
   function () external payable {
     buyTokens(msg.sender);
   }
-
-  /**
-   * init call super.init* function and should be implemented in tehmpate using user input
-   */
-  function init(bytes32[] args) external onlyOwner();
 
   function buyTokens(address beneficiary) public payable {
     require(beneficiary != address(0));

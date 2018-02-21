@@ -118,19 +118,16 @@ contract Locker is Ownable {
   }
 
   function Locker(uint _coeff, address[] _beneficiaries, uint[] _ratios) public {
-    require(_coeff > 0);
     require(_beneficiaries.length == _ratios.length);
 
+    coeff = _coeff;
     numBeneficiaries = _beneficiaries.length;
 
     uint accRatio;
 
-    for(uint i = 0; i < _beneficiaries.length; i++) {
-      beneficiaries[_beneficiaries[i]] = Beneficiary({
-        ratio: _ratios[i],
-        withdrawAmount: 0,
-        releaseAllTokens: false
-      });
+    for(uint i = 0; i < numBeneficiaries; i++) {
+      require(_ratios[i] > 0);
+      beneficiaries[_beneficiaries[i]].ratio = _ratios[i];
 
       accRatio = accRatio.add(_ratios[i]);
     }
@@ -165,29 +162,39 @@ contract Locker is Ownable {
     require(!locked[_beneficiary]);
     require(_releaseRatios.length == _releaseTimes.length);
 
+    uint i;
     uint len = _releaseRatios.length;
 
-    require(_releaseRatios[len - 1] == coeff); // finally should release all tokens
+    // finally should release all tokens
+    /* require(_releaseRatios[len - 1] == coeff); */
 
-    for(uint i = 0; i < len - 1; i++) { // check two array are ascending sorted
-      require(_releaseTimes[i] < _releaseTimes[i + 1]);
-      require(_releaseRatios[i] < _releaseRatios[i + 1]);
+    // check two array are ascending sorted
+    for(i = 0; i < len - 1; i++) {
+      /* require(_releaseTimes[i] < _releaseTimes[i + 1]);
+      require(_releaseRatios[i] < _releaseRatios[i + 1]); */
     }
 
+    // 2 release times for straight locking type
     if (_isStraight) {
-      require(len == 2); // 2 release times for straight locking type
+      require(len == 2);
     }
-
-    locked[_beneficiary] = true;
 
     numLocks = numLocks.add(1);
 
     // create Release for the beneficiary
-    releases[_beneficiary] = Release({
-      isStraight: _isStraight,
-      releaseTimes: _releaseTimes,
-      releaseRatios: _releaseRatios
-    });
+    releases[_beneficiary].isStraight = _isStraight;
+
+    // copy array of uint
+    releases[_beneficiary].releaseTimes = new uint[](len);
+    releases[_beneficiary].releaseRatios = new uint[](len);
+
+    for (i = 0; i < len; i++) {
+      releases[_beneficiary].releaseTimes[i] = _releaseTimes[i];
+      releases[_beneficiary].releaseRatios[i] = _releaseRatios[i];
+    }
+
+    // lock beneficiary
+    locked[_beneficiary] = true;
 
     //  if all beneficiaries locked, change Locker state to change
     if (numLocks == numBeneficiaries) {

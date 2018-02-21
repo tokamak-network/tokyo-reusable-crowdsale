@@ -10,7 +10,7 @@ contract MinimumPaymentCrowdsale is BaseCrowdsale {
   uint256 public minPayment;
 
   function MinimumPaymentCrowdsale(uint256 _minPayment) public {
-    require(minPayment != 0);
+    require(_minPayment != 0);
     minPayment = _minPayment;
   }
 
