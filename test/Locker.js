@@ -38,56 +38,53 @@ contract("Locker", async ([ owner, ...accounts ]) => {
   // [true, false, true, false]
   const isStraights = beneficiaries.map((_, i) => i % 2 === 0);
 
-  const activeTime = moment().add(100, "seconds").unix();
+  const activeTime = moment().add(100, "minutes").unix();
   const releases = [
     [ // beneficiary 1
       {
-        release_time: moment.unix(activeTime).add(100, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(100, "minutes").unix(),
         release_ratio: new BigNumber(50),
       },
       {
-        release_time: moment.unix(activeTime).add(200, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(200, "minutes").unix(),
         release_ratio: new BigNumber(100),
       },
     ],
     [ // beneficiary 2
       {
-        release_time: moment.unix(activeTime).add(100, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(100, "minutes").unix(),
         release_ratio: new BigNumber(50),
       },
       {
-        release_time: moment.unix(activeTime).add(200, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(200, "minutes").unix(),
         release_ratio: new BigNumber(100),
       },
     ],
     [ // beneficiary 3
       {
-        release_time: moment.unix(activeTime).add(100, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(100, "minutes").unix(),
         release_ratio: new BigNumber(20),
       },
       {
-        release_time: moment.unix(activeTime).add(200, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(200, "minutes").unix(),
         release_ratio: new BigNumber(100),
       },
     ],
     [ // beneficiary 4
       {
-        release_time: moment.unix(activeTime).add(100, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(100, "minutes").unix(),
         release_ratio: new BigNumber(30),
       },
       {
-        release_time: moment.unix(activeTime).add(200, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(200, "minutes").unix(),
         release_ratio: new BigNumber(50),
       },
       {
-        release_time: moment.unix(activeTime).add(300, "seconds").unix(),
+        release_time: moment.unix(activeTime).add(300, "minutes").unix(),
         release_ratio: new BigNumber(100),
       },
     ],
   ];
-
-  console.log(beneficiaries);
-  console.log(JSON.stringify(releases, null, 2));
 
   before(async () => {
     token = await Token.new();
@@ -157,8 +154,8 @@ contract("Locker", async ([ owner, ...accounts ]) => {
     }
   });
 
-  describe("after 100 seconds", async () => {
-    const targetTime = moment.unix(activeTime).add(100, "seconds").unix();
+  describe("after 100 minutes", async () => {
+    const targetTime = moment.unix(activeTime).add(100, "minutes").unix();
 
     it(`move time to ${ targetTime }`, async () => {
       await increaseTimeTo(targetTime).should.be.fulfilled;
@@ -211,8 +208,6 @@ contract("Locker", async ([ owner, ...accounts ]) => {
         .should.be.fulfilled;
 
       const tokenBalance2 = await token.balanceOf(beneficiary);
-      console.log("targetTokenAmount", targetTokenAmount);
-      console.log("tokenBalance2", tokenBalance2);
 
       tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
     });
@@ -235,61 +230,185 @@ contract("Locker", async ([ owner, ...accounts ]) => {
     });
   });
 
-  // describe("after 150 seconds", async () => {
-  //   const targetTime = moment.unix(activeTime).add(150, "seconds").unix();
-  //
-  //   it(`move time to ${ targetTime }`, async () => {
-  //     await increaseTimeTo(targetTime).should.be.fulfilled;
-  //   });
-  //
-  //   it("beneficiary 1 should release about 25% of locked tokens", async () => {
-  //     const index = 0;
-  //     const beneficiary = beneficiaries[ index ];
-  //     const beneficiaryTokenAmount = tokenAmounts[ index ];
-  //     const releaseTokenAmount = beneficiaryTokenAmount.mul(0.25);
-  //
-  //     const tokenBalance1 = await token.balanceOf(beneficiary);
-  //     const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
-  //
-  //     await locker.release({ from: beneficiary })
-  //       .should.be.fulfilled;
-  //
-  //     const tokenBalance2 = await token.balanceOf(beneficiary);
-  //
-  //     tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
-  //   });
-  //
-  //   it("beneficiary 2 should not release locked tokens", async () => {
-  //     const index = 1;
-  //     const beneficiary = beneficiaries[ index ];
-  //
-  //     await locker.release({ from: beneficiary })
-  //       .should.be.rejectedWith(EVMThrow);
-  //   });
-  //
-  //   it("beneficiary 3 should release about 40% of locked tokens", async () => {
-  //     const index = 2;
-  //     const beneficiary = beneficiaries[ index ];
-  //     const beneficiaryTokenAmount = tokenAmounts[ index ];
-  //     const releaseTokenAmount = beneficiaryTokenAmount.mul(0.4);
-  //
-  //     const tokenBalance1 = await token.balanceOf(beneficiary);
-  //     const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
-  //
-  //     await locker.release({ from: beneficiary })
-  //       .should.be.fulfilled;
-  //
-  //     const tokenBalance2 = await token.balanceOf(beneficiary);
-  //
-  //     tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
-  //   });
-  //
-  //   it("beneficiary 4 should not release locked tokens", async () => {
-  //     const index = 3;
-  //     const beneficiary = beneficiaries[ index ];
-  //
-  //     await locker.release({ from: beneficiary })
-  //       .should.be.rejectedWith(EVMThrow);
-  //   });
-  // });
+  describe("after 150 minutes", async () => {
+    const targetTime = moment.unix(activeTime).add(150, "minutes").unix();
+
+    it(`move time to ${ targetTime }`, async () => {
+      await increaseTimeTo(targetTime).should.be.fulfilled;
+    });
+
+    it("beneficiary 1 should release about 25% of locked tokens", async () => {
+      const index = 0;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.25);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 2 should release 0% of locked tokens", async () => {
+      const index = 1;
+      const beneficiary = beneficiaries[ index ];
+      const releaseTokenAmount = ether(0);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 3 should release about 40% of locked tokens", async () => {
+      const index = 2;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.4);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 4 should release 0% of locked tokens", async () => {
+      const index = 3;
+      const beneficiary = beneficiaries[ index ];
+      const releaseTokenAmount = ether(0);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+  });
+
+  describe("after 200 minutes", async () => {
+    const targetTime = moment.unix(activeTime).add(200, "minutes").unix();
+
+    it(`move time to ${ targetTime }`, async () => {
+      await increaseTimeTo(targetTime).should.be.fulfilled;
+    });
+
+    it("beneficiary 1 should release about 25% of locked tokens", async () => {
+      const index = 0;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.25);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 2 should release about 50% of locked tokens", async () => {
+      const index = 1;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.5);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 3 should release about 40% of locked tokens", async () => {
+      const index = 2;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.4);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("beneficiary 4 should release about 20% of locked tokens", async () => {
+      const index = 3;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.2);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+  });
+
+  describe("after 300 minutes", async () => {
+    const targetTime = moment.unix(activeTime).add(300, "minutes").unix();
+
+    it(`move time to ${ targetTime }`, async () => {
+      await increaseTimeTo(targetTime).should.be.fulfilled;
+    });
+
+    it("beneficiary 4 should release about 50% of locked tokens", async () => {
+      const index = 3;
+      const beneficiary = beneficiaries[ index ];
+      const beneficiaryTokenAmount = tokenAmounts[ index ];
+      const releaseTokenAmount = beneficiaryTokenAmount.mul(0.5);
+
+      const tokenBalance1 = await token.balanceOf(beneficiary);
+      const targetTokenAmount = tokenBalance1.add(releaseTokenAmount);
+
+      await locker.release({ from: beneficiary })
+        .should.be.fulfilled;
+
+      const tokenBalance2 = await token.balanceOf(beneficiary);
+
+      tokenBalance2.same(targetTokenAmount, e).should.be.equal(true);
+    });
+
+    it("check beneficiaries' token balance", async () => {
+      const tokenBalances = await Promise.all(beneficiaries
+        .map(beneficiary => token.balanceOf(beneficiary)));
+
+      tokenBalances.should.be.deep.equal(tokenAmounts);
+    });
+  });
 });

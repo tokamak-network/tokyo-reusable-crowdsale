@@ -276,10 +276,7 @@ contract Locker is Ownable {
     require(now >= firstTime); // pass if can release
 
     if(now >= lastTime) { // inclusive to reduce calculation
-      releasableAmount = getPartialAmount(
-        now.sub(activeTime),
-        lastTime.sub(activeTime),
-        totalReleasableAmount);
+      releasableAmount = totalReleasableAmount;
     } else {
       // releasable amount at first time
       uint firstAmount = getPartialAmount(
@@ -292,10 +289,7 @@ contract Locker is Ownable {
         now.sub(firstTime),
         lastTime.sub(firstTime),
         totalReleasableAmount.sub(firstAmount));
-
       releasableAmount = releasableAmount.add(firstAmount);
-
-      /* releasableAmount = firstAmount; */
     }
 
     // subtract already withdrawn amounts
