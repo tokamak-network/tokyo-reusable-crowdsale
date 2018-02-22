@@ -82,13 +82,22 @@ contract BaseCrowdsale is Ownable {
     buyTokens(msg.sender);
   }
 
+  event Log(string _msg);
+
   function buyTokens(address beneficiary) public payable {
+    Log("before validPurcahse");
+
+
     require(beneficiary != address(0));
     require(validPurchase());
+
+    Log("after validPurcahse");
 
     uint256 weiAmount = msg.value;
 
     uint256 toFund = calculateToFund(beneficiary, weiAmount);
+    Log("before calculateToFund");
+
     uint256 toReturn = weiAmount.sub(toFund);
     require(toFund > 0);
 

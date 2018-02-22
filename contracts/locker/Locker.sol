@@ -37,7 +37,7 @@ contract Locker is Ownable {
    *     |       .   |
    *     |     .     |
    *     +===+=======+----*----------> time
-   *     Locker  First    Second
+   *     Locker  First    Last
    *  Activated  Release  Release
    *
    *
@@ -87,8 +87,6 @@ contract Locker is Ownable {
     uint[] releaseRatios;   //
   }
 
-
-
   uint public activeTime;
 
   // ERC20 basic token contract being held
@@ -117,9 +115,11 @@ contract Locker is Ownable {
     _;
   }
 
-  function Locker(uint _coeff, address[] _beneficiaries, uint[] _ratios) public {
+  function Locker(address _token, uint _coeff, address[] _beneficiaries, uint[] _ratios) public {
+    require(_token != address(0));
     require(_beneficiaries.length == _ratios.length);
 
+    token = ERC20Basic(_token);
     coeff = _coeff;
     numBeneficiaries = _beneficiaries.length;
 
@@ -150,6 +150,33 @@ contract Locker is Ownable {
     state = State.Active;
   }
 
+  function getTotalLockedAmounts(address _beneficiary)
+    public
+    view
+    onlyBeneficiary(_beneficiary)
+    returns (uint)
+  {
+    return getPartialAmount(beneficiaries[_beneficiary].ratio, coeff, initialBalance);
+  }
+
+  function getReleaseTimes(address _beneficiary)
+    public
+    view
+    onlyBeneficiary(_beneficiary)
+    returns (uint[])
+  {
+    return releases[_beneficiary].releaseTimes;
+  }
+
+  function getReleaseRatios(address _beneficiary)
+    public
+    view
+    onlyBeneficiary(_beneficiary)
+    returns (uint[])
+  {
+    return releases[_beneficiary].releaseRatios;
+  }
+
   /**
    * @notice add new release record for beneficiary
    */
@@ -166,12 +193,12 @@ contract Locker is Ownable {
     uint len = _releaseRatios.length;
 
     // finally should release all tokens
-    /* require(_releaseRatios[len - 1] == coeff); */
+    require(_releaseRatios[len - 1] == coeff);
 
     // check two array are ascending sorted
     for(i = 0; i < len - 1; i++) {
-      /* require(_releaseTimes[i] < _releaseTimes[i + 1]);
-      require(_releaseRatios[i] < _releaseRatios[i + 1]); */
+      require(_releaseTimes[i] < _releaseTimes[i + 1]);
+      require(_releaseRatios[i] < _releaseRatios[i + 1]);
     }
 
     // 2 release times for straight locking type
@@ -225,7 +252,7 @@ contract Locker is Ownable {
     token.transfer(msg.sender, releasableAmount);
   }
 
-  function getReleasableAmount(address _beneficiary) public view returns (uint) {
+  function getReleasableAmount(address _beneficiary) internal view returns (uint) {
     if (releases[_beneficiary].isStraight) {
       return getStraightReleasableAmount(_beneficiary);
     } else {
@@ -236,40 +263,62 @@ contract Locker is Ownable {
   /**
    * @notice return releaseable amount for beneficiary in case of straight type of release
    */
-  function getStraightReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
+  function getStraightReleasableAmount(address _beneficiary) internal view returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
     Release memory _r = releases[_beneficiary];
 
-    // total amount of tokens beneficiary will receive
-    uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
+    // total amount of tokens beneficiary can release
+    uint totalReleasableAmount = getTotalLockedAmounts(_beneficiary);
 
     uint firstTime = _r.releaseTimes[0];
-    uint secondTime = _r.releaseTimes[1];
+    uint lastTime = _r.releaseTimes[1];
 
-    require(now < firstTime); // pass if can release
+    require(now >= firstTime); // pass if can release
 
-    releasableAmount = getPartialAmount(
-      now.sub(activeTime),
-      secondTime.sub(activeTime),
-      totalReleasableAmount);
+    if(now >= lastTime) { // inclusive to reduce calculation
+      releasableAmount = getPartialAmount(
+        now.sub(activeTime),
+        lastTime.sub(activeTime),
+        totalReleasableAmount);
+    } else {
+      // releasable amount at first time
+      uint firstAmount = getPartialAmount(
+        _r.releaseRatios[0],
+        coeff,
+        totalReleasableAmount);
+
+      // partial amount without first amount
+      releasableAmount = getPartialAmount(
+        now.sub(firstTime),
+        lastTime.sub(firstTime),
+        totalReleasableAmount.sub(firstAmount));
+
+      releasableAmount = releasableAmount.add(firstAmount);
+
+      /* releasableAmount = firstAmount; */
+    }
+
+    // subtract already withdrawn amounts
     releasableAmount = releasableAmount.sub(_b.withdrawAmount);
   }
 
   /**
    * @notice return releaseable amount for beneficiary in case of variable type of release
    */
-  function getVariableReleasableAmount(address _beneficiary) internal returns (uint releasableAmount) {
+  function getVariableReleasableAmount(address _beneficiary) internal view returns (uint releasableAmount) {
     Beneficiary memory _b = beneficiaries[_beneficiary];
     Release memory _r = releases[_beneficiary];
 
     // total amount of tokens beneficiary will receive
-    uint totalReleasableAmount = getPartialAmount(_b.ratio, coeff, initialBalance);
+    uint totalReleasableAmount = getTotalLockedAmounts(_beneficiary);
 
     uint releaseRatio;
 
-    for(uint i = 0; i < _r.releaseTimes.length; i++) {
-      if (now > _r.releaseTimes[i]) {
+    // reverse order for short curcit
+    for(uint i = _r.releaseTimes.length - 1; i >= 0; i--) {
+      if (now >= _r.releaseTimes[i]) {
         releaseRatio = _r.releaseRatios[i];
+        break;
       }
     }
 
