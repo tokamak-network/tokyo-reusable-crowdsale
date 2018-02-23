@@ -51,7 +51,7 @@ contract StagedCrowdsale is KYCCrowdsale {
       uint periodCap;
 
       if (_caps[i] != 0) {
-        periodCap = coeff.add(uint(_caps[i])).mul(uint(cap)).div(coeff);
+        periodCap = cap.mul(uint(_caps[i])).div(coeff);
       } else {
         periodCap = 0;
       }
