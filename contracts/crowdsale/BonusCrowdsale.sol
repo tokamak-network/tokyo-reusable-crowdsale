@@ -92,7 +92,7 @@ contract BonusCrowdsale is BaseCrowdsale {
         require(now >= startTime);
 
         for (uint i = 0; i < BONUS_TIMES.length; i++) {
-            if (now.sub(startTime) <= BONUS_TIMES[i]) {
+            if (now <= BONUS_TIMES[i]) {
                 return BONUS_TIMES_VALUES[i];
             }
         }
