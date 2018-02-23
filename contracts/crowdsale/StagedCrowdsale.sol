@@ -128,6 +128,9 @@ contract StagedCrowdsale is KYCCrowdsale {
       require(super.registered(_beneficiary));
     }
 
+    // check min purchase limit of the period
+    require(_weiAmount > uint(p.minPurchaseLimit));
+
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
       uint256 postWeiRaised = uint256(p.weiRaised).add(_weiAmount);
