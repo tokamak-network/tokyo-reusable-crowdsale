@@ -21,4 +21,7 @@ contract MiniMeBaseCrowdsale is BaseCrowdsale {
     token.changeController(_to);
   }
 
+  function getTotalSupply() internal returns (uint256) {
+    return token.totalSupply();
+  }
 }

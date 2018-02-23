@@ -18,6 +18,7 @@ contract BaseCrowdsale is Ownable {
 
   // base to calculate percentage
   uint256 public coeff;
+  uint256 public lockerRatios;
 
   // amount of raised money in wei
   uint256 public weiRaised;
@@ -32,7 +33,7 @@ contract BaseCrowdsale is Ownable {
   // refund vault used to hold funds while crowdsale is running
   MultiHolderVault public vault;
 
-  address nextTokenOwner;
+  address public nextTokenOwner;
 
   /**
    * event for token purchase logging
@@ -211,6 +212,12 @@ contract BaseCrowdsale is Ownable {
   function finalizationFailHook() internal {}
 
   function finalizationSuccessHook() internal {
+    uint totalSupply = getTotalSupply();
+    uint saleRatios = coeff.sub(lockerRatios);
+
+    uint lockerTokens = totalSupply.mul(lockerRatios).div(saleRatios); // for locker
+
+    generateTokens(address(locker), lockerTokens);
     locker.activate();
 
     transferTokenOwnership(nextTokenOwner);
@@ -222,5 +229,7 @@ contract BaseCrowdsale is Ownable {
   function generateTokens(address _beneficiary, uint256 _tokens) internal;
 
   function transferTokenOwnership(address _to) internal;
+
+  function getTotalSupply() internal returns (uint256);
 
 }

@@ -21,4 +21,8 @@ contract ZeppelinBaseCrowdsale is BaseCrowdsale {
     token.transferOwnership(_to);
   }
 
+  function getTotalSupply() internal returns (uint256) {
+    return token.totalSupply();
+  }
+
 }
