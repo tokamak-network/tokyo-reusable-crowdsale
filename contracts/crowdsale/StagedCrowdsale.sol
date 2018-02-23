@@ -10,7 +10,7 @@ import "./KYCCrowdsale.sol";
  */
 contract StagedCrowdsale is KYCCrowdsale {
 
-  uint8 public MAX_PERIODS_COUNT;
+  uint8 public numPeriods;
 
   Period[] public periods;
 
@@ -24,8 +24,8 @@ contract StagedCrowdsale is KYCCrowdsale {
     bool kyc;
   }
 
-  function StagedCrowdsale(uint _MAX_PERIODS_COUNT) public {
-    MAX_PERIODS_COUNT = uint8(_MAX_PERIODS_COUNT);
+  function StagedCrowdsale(uint _numPeriods) public {
+    numPeriods = uint8(_numPeriods);
   }
 
   function initPeriods(
@@ -37,18 +37,19 @@ contract StagedCrowdsale is KYCCrowdsale {
     bool[] _kycs)
     public
   {
-    uint len = _startTimes.length;
+    uint len = numPeriods;
 
-    require(periods.length == 0); // one time init
-    require(len == _endTimes.length
+    require(periods.length == 0);
+    require(len == _startTimes.length
+      && len == _endTimes.length
       && len == _caps.length
       && len == _maxPurchaseLimits.length
       && len == _minPurchaseLimits.length
       && len == _kycs.length);
 
-    uint periodCap;
-
     for (uint i = 0; i < len; i++) {
+      uint periodCap;
+
       if (_caps[i] != 0) {
         periodCap = coeff.add(uint(_caps[i])).mul(uint(cap)).div(coeff);
       } else {
@@ -70,7 +71,7 @@ contract StagedCrowdsale is KYCCrowdsale {
   }
 
   function validPeriods() internal view returns (bool) {
-    if (periods.length != MAX_PERIODS_COUNT) {
+    if (periods.length != numPeriods) {
       return false;
     }
 
@@ -105,7 +106,7 @@ contract StagedCrowdsale is KYCCrowdsale {
    * @notice return if all period is finished.
    */
   function saleFinished() public view returns (bool) {
-    require(periods.length == MAX_PERIODS_COUNT);
+    require(periods.length == numPeriods);
     return periods[periods.length - 1].endTime < now;
   }
 
