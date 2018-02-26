@@ -10,34 +10,26 @@ import "../crowdsale/KYCCrowdsale.sol";
 import "../crowdsale/StagedCrowdsale.sol";
 
 contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrowdsale, PurchaseLimitedCrowdsale, MinimumPaymentCrowdsale, BlockIntervalCrowdsale, KYCCrowdsale, StagedCrowdsale {
+
   bool public initialized;
 
   // constructor parameters are left padded bytes32.
 
-  function SampleProjectCrowdsale(bytes32[15] args)
-    BaseCrowdsale(
-      parseUint(args[0]),
-      parseUint(args[1]),
-      parseUint(args[2]),
-      parseUint(args[3]),
-      parseUint(args[4]),
-      parseUint(args[5]),
-      parseAddress(args[6]),
-      parseAddress(args[7]),
-      parseAddress(args[8]))
+  function SampleProjectCrowdsale(bytes32[6] args)
+    BaseCrowdsale()
     MiniMeBaseCrowdsale(
-      parseAddress(args[9]))
+      parseAddress(args[0]))
     BonusCrowdsale()
     PurchaseLimitedCrowdsale(
-      parseUint(args[10]))
+      parseUint(args[1]))
     MinimumPaymentCrowdsale(
-      parseUint(args[11]))
+      parseUint(args[2]))
     BlockIntervalCrowdsale(
-      parseUint(args[12]))
+      parseUint(args[3]))
     KYCCrowdsale(
-      parseAddress(args[13]))
+      parseAddress(args[4]))
     StagedCrowdsale(
-      parseUint(args[14])) public {}
+      parseUint(args[5])) public {}
 
 
   function parseBool(bytes32 b) internal pure returns (bool) {
@@ -52,8 +44,44 @@ contract SampleProjectCrowdsale is BaseCrowdsale, MiniMeBaseCrowdsale, BonusCrow
     return address(b & 0x000000000000000000000000ffffffffffffffffffffffffffffffffffffffff);
   }
 
-  function init(bytes32[] args) external onlyOwner {
-    require(!initialized);
-    initialized = true;
+  function generateTokens(uint256 _targetTotalSupply) internal {
+  }
+
+  function init(bytes32[] args) public {
+    uint _startTime = uint(args[0]);
+    uint _endTime = uint(args[1]);
+    uint _rate = uint(args[2]);
+    uint _coeff = uint(args[3]);
+    uint _cap = uint(args[4]);
+    uint _goal = uint(args[5]);
+    uint _lockerRatio = uint(args[6]);
+    uint _crowdsaleRatio = uint(args[7]);
+    address _vault = address(args[8]);
+    address _locker = address(args[9]);
+    address _nextTokenOwner = address(args[10]);
+
+    require(_startTime >= now);
+    require(_endTime >= _startTime);
+    require(_rate > 0);
+    require(_coeff > 0);
+    require(_cap > 0);
+    require(_goal > 0);
+    require(_lockerRatio > 0);
+    require(_crowdsaleRatio > 0);
+    require(_vault != address(0));
+    require(_locker != address(0));
+    require(_nextTokenOwner != address(0));
+
+    startTime = _startTime;
+    endTime = _endTime;
+    rate = _rate;
+    coeff = _coeff;
+    cap = _cap;
+    goal = _goal;
+    lockerRatio = _lockerRatio;
+    crowdsaleRatio = _crowdsaleRatio;
+    vault = MultiHolderVault(_vault);
+    locker = Locker(_locker);
+    nextTokenOwner = _nextTokenOwner;
   }
 }

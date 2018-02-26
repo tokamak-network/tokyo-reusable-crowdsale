@@ -18,10 +18,13 @@ contract BaseCrowdsale is Ownable {
 
   // base to calculate percentage
   uint256 public coeff;
-  uint256 public lockerRatios;
 
   // amount of raised money in wei
   uint256 public weiRaised;
+
+  // ratio of tokens for locker and crowdsale
+  uint256 public lockerRatio;
+  uint256 public crowdsaleRatio;
 
   bool public isFinalized = false;
 
@@ -45,59 +48,18 @@ contract BaseCrowdsale is Ownable {
   event TokenPurchase(address indexed purchaser, address indexed beneficiary, uint256 value, uint256 amount);
   event Finalized();
 
-  function BaseCrowdsale (
-    uint256 _startTime,
-    uint256 _endTime,
-    uint256 _rate,
-    uint256 _coeff,
-    uint256 _cap,
-    uint256 _goal,
-    address _vault,
-    address _locker,
-    address _nextTokenOwner
-    ) public
-  {
-    require(_startTime >= now);
-    require(_endTime >= _startTime);
-    require(_rate > 0);
-    require(_coeff > 0);
-    require(_cap > 0);
-    require(_goal > 0);
-    require(_vault != address(0));
-    require(_locker != address(0));
-    require(_nextTokenOwner != address(0));
-
-    startTime = _startTime;
-    endTime = _endTime;
-    rate = _rate;
-    coeff = _coeff;
-    cap = _cap;
-    goal = _goal;
-    vault = MultiHolderVault(_vault);
-    locker = Locker(_locker);
-    nextTokenOwner = _nextTokenOwner;
-  }
-
   // fallback function can be used to buy tokens
   function () external payable {
     buyTokens(msg.sender);
   }
 
-  event Log(string _msg);
-
   function buyTokens(address beneficiary) public payable {
-    Log("before validPurcahse");
-
-
     require(beneficiary != address(0));
     require(validPurchase());
-
-    Log("after validPurcahse");
 
     uint256 weiAmount = msg.value;
 
     uint256 toFund = calculateToFund(beneficiary, weiAmount);
-    Log("before calculateToFund");
 
     uint256 toReturn = weiAmount.sub(toFund);
     require(toFund > 0);
@@ -139,10 +101,8 @@ contract BaseCrowdsale is Ownable {
   // vault finalization task, called when owner calls finalize()
   function finalization() internal {
     if (goalReached()) {
-      vault.close();
       finalizationSuccessHook();
     } else {
-      vault.enableRefunds();
       finalizationFailHook();
     }
   }
@@ -200,6 +160,12 @@ contract BaseCrowdsale is Ownable {
   }
 
   /**
+   * @notice interface to initialize crowdsale parameters.
+   * init should be implemented by Crowdsale Generator.
+   */
+   function init(bytes32[] args) public;
+
+  /**
    * @notice pre hook for buyTokens function
    */
   function buyTokensPreHook(address _beneficiary, uint256 _toFund) internal {}
@@ -209,27 +175,41 @@ contract BaseCrowdsale is Ownable {
    */
   function buyTokensPostHook(address _beneficiary) internal {}
 
-  function finalizationFailHook() internal {}
+  function finalizationFailHook() internal {
+    vault.enableRefunds();
+  }
 
   function finalizationSuccessHook() internal {
-    uint totalSupply = getTotalSupply();
-    uint saleRatios = coeff.sub(lockerRatios);
+    uint targetTotalSupply = getTotalSupply().mul(coeff).div(crowdsaleRatio);
 
-    uint lockerTokens = totalSupply.mul(lockerRatios).div(saleRatios); // for locker
+    generateTokens(targetTotalSupply); // for token holders without time lock
+    generateTokens(address(locker), targetTotalSupply, lockerRatio); // tokens for locker
 
-    generateTokens(address(locker), lockerTokens);
     locker.activate();
+    vault.close();
 
     transferTokenOwnership(nextTokenOwner);
   }
 
   /**
-   * @notice interface to generate token for both MiniMe & Zeppelin(Mintable) token.
+   * @notice interfaces to generate token for both MiniMe & Zeppelin(Mintable) token.
    */
   function generateTokens(address _beneficiary, uint256 _tokens) internal;
-
   function transferTokenOwnership(address _to) internal;
-
   function getTotalSupply() internal returns (uint256);
 
+  /**
+   * @notice interface to generate tokens for token holders without time lock.
+   * generateTokens called when finalization is success, and should be implemented
+   * by Crowdsale Generator.
+   */
+  function generateTokens(uint256 _targetTotalSupply) internal;
+
+  /**
+   * @notice helper function to generate tokens with ratio
+   */
+  function generateTokens(address _beneficiary, uint256 _targetTotalSupply, uint256 _ratio) {
+    uint256 tokens = _targetTotalSupply.mul(_ratio).div(coeff);
+    generateTokens(_beneficiary, tokens);
+  }
 }

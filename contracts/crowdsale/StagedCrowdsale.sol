@@ -25,6 +25,7 @@ contract StagedCrowdsale is KYCCrowdsale {
   }
 
   function StagedCrowdsale(uint _numPeriods) public {
+    require(_numPeriods > 0);
     numPeriods = uint8(_numPeriods);
   }
 
