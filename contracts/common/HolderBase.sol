@@ -33,11 +33,10 @@ contract HolderBase is Ownable {
   }
 
   function initHolders(address[] _addrs, uint96[] _ratios) public onlyOwner {
+    require(!initialized);
     require(holders.length == 0);
     require(_addrs.length == _ratios.length);
     uint256 accRatio;
-
-    initialized = true;
 
     for(uint8 i = 0; i < _addrs.length; i++) {
       holders.push(Holder(_addrs[i], _ratios[i]));
@@ -45,6 +44,8 @@ contract HolderBase is Ownable {
     }
 
     require(accRatio <= ratioCoeff);
+
+    initialized = true;
   }
 
   /**
