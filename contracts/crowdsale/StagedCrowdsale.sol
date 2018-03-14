@@ -131,7 +131,13 @@ contract StagedCrowdsale is KYCCrowdsale {
     }
 
     // check min purchase limit of the period
-    require(_weiAmount > uint(p.minPurchaseLimit));
+    require(_weiAmount >= uint(p.minPurchaseLimit));
+
+    // check max purchase limit of the period
+    if (p.maxPurchaseLimit != 0) {
+      require(_weiAmount <= uint(p.maxPurchaseLimit));
+    }
+
 
     // pre-calculate `toFund` with the period's cap
     if (p.cap > 0) {
